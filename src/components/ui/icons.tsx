@@ -1,0 +1,33 @@
+import {
+  Folder,
+  File,
+  Plus,
+  MoreVertical,
+  Trash2,
+  Edit,
+  Search,
+  ChevronDown,
+  ChevronRight,
+  Save,
+  History,
+  X,
+  Copy,
+  Check,
+} from 'lucide-react';
+
+export const Icons = {
+  Folder,
+  File,
+  Plus,
+  MoreVertical,
+  Trash2,
+  Edit,
+  Search,
+  ChevronDown,
+  ChevronRight,
+  Save,
+  History,
+  X,
+  Copy,
+  Check,
+};

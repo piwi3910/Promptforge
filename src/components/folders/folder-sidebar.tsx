@@ -1,0 +1,331 @@
+"use client";
+
+import { useEffect, useState, useRef } from "react";
+import { Tree, NodeApi, NodeRendererProps, TreeApi } from "react-arborist";
+import { Icons } from "../ui/icons";
+import { Button } from "../ui/button";
+import { getFolders } from "@/app/actions/folder.actions";
+import { useModal } from "@/hooks/use-modal-store";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+
+type FolderNode = {
+  id: string;
+  name: string;
+  children?: FolderNode[];
+  isDefault?: boolean;
+};
+
+interface FolderSidebarProps {
+  onSelectFolder: (id: string, name: string) => void;
+  selectedFolder?: { id: string | null; name: string };
+}
+
+interface FolderWithChildren {
+  id: string;
+  name: string;
+  children?: FolderWithChildren[];
+}
+
+interface FolderNodeComponentProps extends NodeRendererProps<FolderNode> {
+  onRefresh: () => void;
+}
+
+const FolderNodeComponent = ({ node, style, dragHandle, onRefresh }: FolderNodeComponentProps) => {
+  const { onOpen } = useModal();
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleSelect = () => {
+    // We'll handle selection in the parent component through node.select()
+    node.select();
+  };
+
+  const handleCreateSubfolder = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (node.data.isDefault) {
+      // For Default folder, pass "default" as parentId to create children under Default
+      onOpen("createFolder", {
+        parentId: "default",
+        onSuccess: onRefresh
+      });
+    } else {
+      onOpen("createFolder", {
+        parentId: node.data.id,
+        onSuccess: onRefresh
+      });
+    }
+  };
+
+  const canCreateChildren = node.level < 4; // Max 5 levels (0-4)
+
+  return (
+    <div
+      style={style}
+      className={`flex items-center py-1 px-2 rounded-md hover:bg-muted cursor-pointer group ${
+        node.isSelected ? 'bg-orange-100 border-l-4 border-orange-500' : ''
+      } ${node.data.isDefault ? 'font-medium text-blue-600' : ''}`}
+      onClick={handleSelect}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Expand/Collapse Button */}
+      <div className="w-6 h-6 flex items-center justify-center">
+        {node.children && node.children.length > 0 && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-4 h-4 p-0"
+            onClick={(e) => {
+              e.stopPropagation();
+              node.toggle();
+            }}
+          >
+            <Icons.ChevronRight
+              className={`h-3 w-3 transition-transform duration-200 ${
+                node.isOpen ? "rotate-90" : ""
+              }`}
+            />
+          </Button>
+        )}
+      </div>
+
+      {/* Folder Icon */}
+      <Icons.Folder
+        className={`h-2.5 w-2.5 mr-1.5 ${
+          node.isOpen ? 'text-orange-600' : 'text-gray-600'
+        } ${node.data.isDefault ? 'text-blue-600' : ''}`}
+      />
+
+      {/* Folder Name */}
+      <span
+        ref={dragHandle}
+        className="flex-1 truncate select-none text-xs"
+      >
+        {node.data.name}
+      </span>
+
+      {/* Add Subfolder Button */}
+      {canCreateChildren && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className={`w-5 h-5 ml-1 transition-opacity ${
+            isHovered || node.isSelected ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={handleCreateSubfolder}
+        >
+          <Icons.Plus className="h-3 w-3" />
+        </Button>
+      )}
+
+      {/* Dropdown Menu - Only for non-default folders */}
+      {!node.data.isDefault && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-5 h-5 ml-1"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <Icons.MoreVertical className="h-3 w-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-white">
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onOpen("renameFolder", { 
+                  folder: {
+                    id: node.data.id,
+                    name: node.data.name,
+                    parentId: null,
+                    userId: "",
+                    order: null,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                  },
+                  onSuccess: onRefresh
+                });
+              }}
+            >
+              Rename
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onOpen("deleteFolder", { 
+                  folder: {
+                    id: node.data.id,
+                    name: node.data.name,
+                    parentId: null,
+                    userId: "",
+                    order: null,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                  },
+                  onSuccess: onRefresh
+                });
+              }}
+              className="text-red-600"
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+    </div>
+  );
+};
+
+export const FolderSidebar = ({ onSelectFolder, selectedFolder }: FolderSidebarProps) => {
+  // Note: No longer need modal state for refresh tracking - using callbacks
+  const [data, setData] = useState<FolderNode[]>([]);
+  const treeRef = useRef<TreeApi<FolderNode>>(null);
+
+  const fetchFolders = async () => {
+    try {
+      const fetchedFolders = await getFolders();
+      
+      // Transform folder data for react-arborist
+      const transformFolder = (folder: FolderWithChildren): FolderNode => ({
+        id: folder.id,
+        name: folder.name,
+        children: folder.children?.map(transformFolder) || []
+      });
+
+      // Add Default folder at the beginning with all top-level folders as its children
+      const defaultFolder: FolderNode = {
+        id: "default",
+        name: "Default",
+        isDefault: true,
+        children: fetchedFolders.map(transformFolder)
+      };
+
+      const transformedData = [defaultFolder];
+
+      setData(transformedData);
+    } catch (error) {
+      console.error("Error fetching folders:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFolders();
+  }, []);
+
+  // Auto-select folder when data is loaded (either persisted or default)
+  useEffect(() => {
+    if (data.length > 0 && treeRef.current) {
+      // Small delay to ensure tree is rendered
+      setTimeout(() => {
+        const tree = treeRef.current;
+        if (tree && tree.root.children && tree.root.children.length > 0) {
+          // If we have a selected folder from props, try to find and select it
+          if (selectedFolder && selectedFolder.id) {
+            const findAndSelectNode = (nodes: NodeApi<FolderNode>[]): boolean => {
+              for (const node of nodes) {
+                if (node.data.id === selectedFolder.id) {
+                  // Expand the node if it has children
+                  if (node.children && node.children.length > 0) {
+                    node.open();
+                  }
+                  node.select();
+                  return true;
+                }
+                // Recursively search in children
+                if (node.children && findAndSelectNode(node.children)) {
+                  return true;
+                }
+              }
+              return false;
+            };
+
+            // Try to find the persisted folder
+            if (!findAndSelectNode(tree.root.children)) {
+              // If persisted folder not found, fall back to Default
+              const defaultNode = tree.root.children[0];
+              if (defaultNode) {
+                if (defaultNode.children && defaultNode.children.length > 0) {
+                  defaultNode.open();
+                }
+                defaultNode.select();
+                // Only call onSelectFolder if we're not already on Default
+                if (selectedFolder.name !== "Default") {
+                  onSelectFolder("", "Default");
+                }
+              }
+            }
+          } else {
+            // No persisted folder, select Default
+            const defaultNode = tree.root.children[0];
+            if (defaultNode && tree.selectedNodes.length === 0) {
+              if (defaultNode.children && defaultNode.children.length > 0) {
+                defaultNode.open();
+              }
+              defaultNode.select();
+              // Only call onSelectFolder if we're not already on Default
+              if (selectedFolder?.name !== "Default") {
+                onSelectFolder("", "Default");
+              }
+            }
+          }
+        }
+      }, 50);
+    }
+  }, [data]);
+
+  // Note: Removed useEffect refresh pattern - now using onSuccess callbacks in modals
+
+  const handleSelectionChange = (nodes: NodeApi<FolderNode>[]) => {
+    if (nodes.length > 0) {
+      const selectedNode = nodes[0];
+      
+      // Expand the selected node to show its children
+      if (selectedNode.children && selectedNode.children.length > 0) {
+        selectedNode.open();
+      }
+      
+      if (selectedNode.data.isDefault) {
+        onSelectFolder("", "Default");
+      } else {
+        onSelectFolder(selectedNode.data.id, selectedNode.data.name);
+      }
+    }
+  };
+
+  return (
+    <div className="border-r pb-4 pr-4">
+      <div className="flex justify-between items-center mb-4">
+        <span className="font-medium">Folders</span>
+      </div>
+      
+      <div className="h-[calc(100vh-12rem)] overflow-auto">
+        <Tree
+          ref={treeRef}
+          data={data}
+          openByDefault={false}
+          width="100%"
+          height={600}
+          indent={24}
+          rowHeight={32}
+          overscanCount={8}
+          onSelect={handleSelectionChange}
+        >
+          {(props: NodeRendererProps<FolderNode>) => (
+            <FolderNodeComponent {...props} onRefresh={fetchFolders} />
+          )}
+        </Tree>
+      </div>
+    </div>
+  );
+};
