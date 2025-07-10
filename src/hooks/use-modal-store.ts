@@ -11,7 +11,8 @@ export type ModalType =
   | 'deletePrompt'
   | 'createTag'
   | 'editTag'
-  | 'deleteTag';
+  | 'deleteTag'
+  | 'changePassword';
 
 // Simple tag interface for modal data
 export interface TagData {

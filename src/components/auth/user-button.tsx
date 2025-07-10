@@ -6,15 +6,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useModal } from "@/hooks/use-modal-store";
+import { Key } from "lucide-react";
 
 export const AuthUserButton = () => {
   const { data: session } = useSession();
+  const { onOpen } = useModal();
 
   if (!session?.user) {
     return null;
   }
+
+  const handleChangePassword = () => {
+    onOpen("changePassword");
+  };
 
   return (
     <DropdownMenu>
@@ -30,6 +38,15 @@ export const AuthUserButton = () => {
           <div className="font-medium">{session.user.name}</div>
           <div className="text-sm text-muted-foreground">{session.user.email}</div>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={handleChangePassword}
+          className="cursor-pointer"
+        >
+          <Key className="mr-2 h-4 w-4" />
+          Change Password
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => signOut({ callbackUrl: "/" })}
           className="cursor-pointer"

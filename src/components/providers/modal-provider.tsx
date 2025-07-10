@@ -11,6 +11,7 @@ import { DeletePromptModal } from "../modals/delete-prompt-modal";
 import { CreateTagModal } from "../modals/create-tag-modal";
 import { EditTagModal } from "../modals/edit-tag-modal";
 import { DeleteTagModal } from "../modals/delete-tag-modal";
+import { ChangePasswordModal } from "../modals/change-password-modal";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -35,6 +36,7 @@ export const ModalProvider = () => {
       <CreateTagModal />
       <EditTagModal />
       <DeleteTagModal />
+      <ChangePasswordModal />
     </>
   );
 };
