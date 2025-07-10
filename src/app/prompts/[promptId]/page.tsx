@@ -38,7 +38,7 @@ export default function PromptPage({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const languageOptions = ["Markdown", "Text", "Yaml", "Json", "XML"];
+  const languageOptions = ["Markdown", "Text", "JavaScript", "Python", "JSON", "YAML", "XML"];
 
   useEffect(() => {
     const initializeParams = async () => {
@@ -225,7 +225,7 @@ export default function PromptPage({
         
         {/* Editor taking remaining space */}
         <div className="flex-grow">
-          <Editor value={content} onChange={setContent} />
+          <Editor value={content} onChange={setContent} language={selectedLanguage} />
         </div>
       </div>
       

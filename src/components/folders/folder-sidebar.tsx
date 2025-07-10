@@ -282,7 +282,7 @@ export const FolderSidebar = ({ onSelectFolder, selectedFolder }: FolderSidebarP
         }
       }, 50);
     }
-  }, [data]);
+  }, [data, onSelectFolder, selectedFolder]);
 
   // Note: Removed useEffect refresh pattern - now using onSuccess callbacks in modals
 

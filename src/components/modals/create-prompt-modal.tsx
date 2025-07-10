@@ -27,7 +27,7 @@ export const CreatePromptModal = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState("Text");
 
-  const languageOptions = ["Markdown", "Text", "Yaml", "Json", "XML"];
+  const languageOptions = ["Markdown", "Text", "JavaScript", "Python", "JSON", "YAML", "XML"];
   const isModalOpen = isOpen && type === "createPrompt";
 
   const handleClose = () => {
@@ -129,7 +129,7 @@ export const CreatePromptModal = () => {
             
             {/* Editor taking remaining space */}
             <div className="flex-grow">
-              <Editor value={content} onChange={setContent} />
+              <Editor value={content} onChange={setContent} language={selectedLanguage} />
             </div>
           </div>
           
