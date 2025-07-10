@@ -8,6 +8,9 @@ import { CreatePromptModal } from "../modals/create-prompt-modal";
 import { RenamePromptModal } from "../modals/rename-prompt-modal";
 import { MovePromptModal } from "../modals/move-prompt-modal";
 import { DeletePromptModal } from "../modals/delete-prompt-modal";
+import { CreateTagModal } from "../modals/create-tag-modal";
+import { EditTagModal } from "../modals/edit-tag-modal";
+import { DeleteTagModal } from "../modals/delete-tag-modal";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -29,6 +32,9 @@ export const ModalProvider = () => {
       <RenamePromptModal />
       <MovePromptModal />
       <DeletePromptModal />
+      <CreateTagModal />
+      <EditTagModal />
+      <DeleteTagModal />
     </>
   );
 };
