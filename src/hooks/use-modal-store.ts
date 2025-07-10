@@ -8,14 +8,27 @@ export type ModalType =
   | 'createPrompt'
   | 'renamePrompt'
   | 'movePrompt'
-  | 'deletePrompt';
+  | 'deletePrompt'
+  | 'createTag'
+  | 'editTag'
+  | 'deleteTag';
+
+// Simple tag interface for modal data
+export interface TagData {
+  id: string;
+  name: string;
+  description: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 interface ModalData {
   folder?: Folder;
   prompt?: Prompt;
+  tag?: TagData;
   parentId?: string;
   folderId?: string;
-  onSuccess?: () => void;
+  onSuccess?: (result?: TagData | void) => void;
 }
 
 interface ModalStore {

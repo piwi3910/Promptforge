@@ -6,6 +6,7 @@ import {
   Home,
   Menu,
   Search,
+  Tag,
   Zap,
 } from "lucide-react"
 
@@ -52,6 +53,8 @@ export function Header() {
               className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
             >
               <Home className="h-5 w-5" />
+              Dashboard
+            </Link>
             <Link
               href="/prompts"
               className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
@@ -59,7 +62,12 @@ export function Header() {
               <FileText className="h-5 w-5" />
               Prompts
             </Link>
-              Dashboard
+            <Link
+              href="/tags"
+              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+            >
+              <Tag className="h-5 w-5" />
+              Tags
             </Link>
           </nav>
         </SheetContent>

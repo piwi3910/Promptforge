@@ -2,6 +2,7 @@ import Link from "next/link"
 import {
   Home,
   FileText,
+  Tag,
   Zap,
 } from "lucide-react"
 
@@ -30,6 +31,13 @@ export function Sidebar() {
             >
               <FileText className="h-4 w-4" />
               Prompts
+            </Link>
+            <Link
+              href="/tags"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-orange-100 transition-all hover:text-white hover:bg-orange-600"
+            >
+              <Tag className="h-4 w-4" />
+              Tags
             </Link>
           </nav>
         </div>
