@@ -7,6 +7,7 @@ import type { Prompt, Tag } from "@/generated/prisma";
 import { useDebounce } from "@/hooks/use-debounce";
 import { VersionHistorySidebar } from "@/components/prompts/version-history-sidebar";
 import { TagInput } from "@/components/prompts/tag-input";
+import { EnhancedTagInput } from "@/components/prompts/enhanced-tag-input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -234,35 +235,11 @@ export default function PromptPage({
           {isCreateMode ? (
             <div>
               <label className="text-sm font-medium mb-2 block">Tags</label>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                  >
-                    {tag}
-                    <button
-                      onClick={() => setTags(tags.filter((_, i) => i !== index))}
-                      className="ml-1 text-blue-600 hover:text-blue-800"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-                <Input
-                  placeholder="Add tag..."
-                  className="flex-grow min-w-0"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      const value = e.currentTarget.value.trim();
-                      if (value && !tags.includes(value)) {
-                        setTags([...tags, value]);
-                        e.currentTarget.value = '';
-                      }
-                    }
-                  }}
-                />
-              </div>
+              <EnhancedTagInput
+                selectedTags={tags}
+                onTagsChange={setTags}
+                placeholder="Add tags..."
+              />
             </div>
           ) : (
             prompt && <TagInput promptId={prompt.id} initialTags={prompt.tags} />

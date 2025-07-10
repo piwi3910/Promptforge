@@ -17,15 +17,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, X } from "lucide-react";
-import { Badge } from "../ui/badge";
+import { ChevronDown } from "lucide-react";
+import { EnhancedTagInput } from "@/components/prompts/enhanced-tag-input";
 
 export const CreatePromptModal = () => {
   const { isOpen, onClose, type, data } = useModal();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("Text");
 
   const languageOptions = ["Markdown", "Text", "Yaml", "Json", "XML"];
@@ -35,19 +34,8 @@ export const CreatePromptModal = () => {
     setTitle("");
     setContent("");
     setTags([]);
-    setTagInput("");
     setSelectedLanguage("Text");
     onClose();
-  };
-
-  const handleAddTag = () => {
-    if (tagInput.trim() === "" || tags.includes(tagInput.trim())) return;
-    setTags([...tags, tagInput.trim()]);
-    setTagInput("");
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   const handleCreate = async () => {
@@ -76,7 +64,7 @@ export const CreatePromptModal = () => {
       setTitle("");
       setContent("");
       setTags([]);
-      setTagInput("");
+      
       setSelectedLanguage("Text");
       onClose();
     } catch (error) {
@@ -149,33 +137,11 @@ export const CreatePromptModal = () => {
           <div className="w-80 border-l flex flex-col">
             <div className="p-4 border-b">
               <h3 className="font-medium mb-3">Tags</h3>
-              <div className="flex gap-2 mb-3 flex-wrap">
-                {tags.map((tag) => (
-                  <Badge key={tag} variant="secondary">
-                    {tag}
-                    <button
-                      className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                      onClick={() => handleRemoveTag(tag)}
-                    >
-                      <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  placeholder="Add a tag"
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddTag();
-                    }
-                  }}
-                />
-                <Button onClick={handleAddTag} size="sm">Add</Button>
-              </div>
+              <EnhancedTagInput
+                selectedTags={tags}
+                onTagsChange={setTags}
+                placeholder="Add tags..."
+              />
             </div>
             <div className="flex-grow p-4">
               <div className="text-sm text-muted-foreground">
