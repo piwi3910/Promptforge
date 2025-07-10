@@ -188,7 +188,7 @@ export const EnhancedTagInput = ({
         {isDropdownOpen && (
           <div
             ref={dropdownRef}
-            className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md max-h-60 overflow-auto"
+            className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-md max-h-60 overflow-auto"
           >
             {filteredTags.length > 0 ? (
               <>
