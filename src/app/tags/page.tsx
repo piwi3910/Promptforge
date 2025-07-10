@@ -29,15 +29,6 @@ export default async function TagsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Tags</h1>
-          <p className="text-muted-foreground">
-            Manage your tags to organize and categorize your prompts
-          </p>
-        </div>
-      </div>
-
       <Card>
         <CardHeader>
           <CardTitle>Tag Management</CardTitle>
