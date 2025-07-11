@@ -88,6 +88,13 @@ export async function createPrompt({
             create: { name: tag },
           })),
         },
+        versions: {
+          create: {
+            content: content || "",
+            version: "1.0",
+            changeMessage: "Initial version",
+          },
+        },
       },
     });
 
