@@ -1,9 +1,17 @@
 import React from 'react';
+import { redirect } from 'next/navigation';
+import { requireAuth } from '@/lib/auth';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+  try {
+    await requireAuth();
+  } catch {
+    redirect('/sign-in');
+  }
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[196px_1fr] lg:grid-cols-[224px_1fr] bg-background">
       <Sidebar />
