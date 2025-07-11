@@ -35,12 +35,20 @@ export const VersionHistorySidebar = ({
         <div className="space-y-4">
           {versions.map((version) => (
             <div key={version.id} className="p-2 rounded-md hover:bg-muted">
-              <p className="text-sm text-muted-foreground">
-                {format(new Date(version.createdAt), "PPpp")}
+              <div className="flex justify-between items-center">
+                <span className="font-semibold">
+                  v{version.version}
+                </span>
+                <p className="text-xs text-muted-foreground">
+                  {format(new Date(version.createdAt), "PPpp")}
+                </p>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1 truncate">
+                {version.changeMessage || "No change message"}
               </p>
               <Button
                 variant="link"
-                className="p-0 h-auto"
+                className="p-0 h-auto mt-1"
                 onClick={() => handleRestore(version.id)}
               >
                 Restore

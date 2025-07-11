@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getPromptById, updatePrompt, createPrompt } from "@/app/actions/prompt.actions";
 import { Editor } from "@/components/editor/editor";
-import type { Prompt, Tag } from "@/generated/prisma";
+import type { Prompt, Tag, PromptVersion } from "@/generated/prisma";
 import { useDebounce } from "@/hooks/use-debounce";
 import { VersionHistorySidebar } from "@/components/prompts/version-history-sidebar";
 import { TagInput } from "@/components/prompts/tag-input";
@@ -25,7 +25,7 @@ export default function PromptPage({
 }: {
   params: Promise<{ promptId: string }>;
 }) {
-  const [prompt, setPrompt] = useState<(Prompt & { tags: Tag[] }) | null>(null);
+  const [prompt, setPrompt] = useState<(Prompt & { tags: Tag[], versions: PromptVersion[] }) | null>(null);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -67,7 +67,7 @@ export default function PromptPage({
     
     const fetchPrompt = async () => {
       const fetchedPrompt = await getPromptById(promptId);
-      setPrompt(fetchedPrompt as (Prompt & { tags: Tag[] }) | null);
+      setPrompt(fetchedPrompt as (Prompt & { tags: Tag[], versions: PromptVersion[] }) | null);
       setContent(fetchedPrompt?.content || "");
       setTitle(fetchedPrompt?.title || "");
       setDescription(fetchedPrompt?.description || "");
@@ -139,8 +139,9 @@ export default function PromptPage({
     } else if (promptId) {
       onOpen("saveVersion", {
         promptData: { id: promptId, content, title, description },
-        onSuccess: () => {
-          // Maybe show a toast notification for success
+        onSuccess: async () => {
+          const fetchedPrompt = await getPromptById(promptId);
+          setPrompt(fetchedPrompt as (Prompt & { tags: Tag[], versions: PromptVersion[] }) | null);
         },
       });
     }
@@ -226,6 +227,11 @@ export default function PromptPage({
             </div>
             {!isCreateMode && (
               <div className="flex items-center gap-2">
+                {prompt?.versions?.[0]?.version && (
+                  <span className="text-sm text-gray-500">
+                    Version: {prompt.versions[0].version}
+                  </span>
+                )}
                 <Button
                   onClick={handleSave}
                   disabled={isSaving}

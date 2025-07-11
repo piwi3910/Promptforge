@@ -111,6 +111,12 @@ export async function getPromptById(id: string) {
     where: { id, userId: user.id },
     include: {
       tags: true,
+      versions: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 1,
+      },
     },
   });
 
