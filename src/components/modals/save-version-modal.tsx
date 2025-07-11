@@ -22,12 +22,12 @@ export function SaveVersionModal() {
   const { promptData, onSuccess } = data;
 
   const [changeMessage, setChangeMessage] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
+  const [savingType, setSavingType] = useState<"minor" | "major" | null>(null);
 
   const handleSave = async (versionType: "minor" | "major") => {
     if (!promptData?.id || !promptData.content) return;
 
-    setIsSaving(true);
+    setSavingType(versionType);
     try {
       await createPromptVersion({
         promptId: promptData.id,
@@ -45,12 +45,13 @@ export function SaveVersionModal() {
       console.error(`Error creating ${versionType} version:`, error);
       // You might want to show a toast notification here
     } finally {
-      setIsSaving(false);
+      setSavingType(null);
     }
   };
 
   const handleClose = () => {
     setChangeMessage("");
+    setSavingType(null);
     onClose();
   };
 
@@ -80,19 +81,19 @@ export function SaveVersionModal() {
           </p>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose} disabled={isSaving}>
+          <Button variant="outline" onClick={handleClose} disabled={!!savingType}>
             Cancel
           </Button>
           <div className="flex items-center gap-2">
             <Button
               onClick={() => handleSave("minor")}
-              disabled={isSaving}
+              disabled={!!savingType}
               variant="secondary"
             >
-              {isSaving ? "Saving..." : "Save as Minor Change"}
+              {savingType === 'minor' ? "Saving..." : "Save as Minor Change"}
             </Button>
-            <Button onClick={() => handleSave("major")} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save as Major Change"}
+            <Button onClick={() => handleSave("major")} disabled={!!savingType}>
+              {savingType === 'major' ? "Saving..." : "Save as Major Change"}
             </Button>
           </div>
         </DialogFooter>
