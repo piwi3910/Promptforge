@@ -35,7 +35,7 @@ export default function SignInPage() {
       } else {
         // Wait for session to be updated
         await getSession()
-        router.push("/prompts")
+        router.push("/dashboard")
         router.refresh()
       }
     } catch {

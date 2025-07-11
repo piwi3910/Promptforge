@@ -13,6 +13,8 @@ import {
   X,
   Copy,
   Check,
+  Tag,
+  BarChart3,
 } from 'lucide-react';
 
 export const Icons = {
@@ -30,4 +32,6 @@ export const Icons = {
   X,
   Copy,
   Check,
+  Tag,
+  BarChart3,
 };

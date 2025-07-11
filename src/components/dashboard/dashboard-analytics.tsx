@@ -1,9 +1,10 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  BarChart, 
-  Bar, 
+import { Icons } from "@/components/ui/icons";
+import {
+  BarChart,
+  Bar,
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -42,7 +43,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Prompts</CardTitle>
-            <div className="h-4 w-4 text-orange-600">📝</div>
+            <Icons.File className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalPrompts}</div>
@@ -55,7 +56,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Folders</CardTitle>
-            <div className="h-4 w-4 text-orange-600">📁</div>
+            <Icons.Folder className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalFolders}</div>
@@ -68,7 +69,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Tags</CardTitle>
-            <div className="h-4 w-4 text-orange-600">🏷️</div>
+            <Icons.Tag className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalTags}</div>
@@ -81,7 +82,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Versions</CardTitle>
-            <div className="h-4 w-4 text-orange-600">📊</div>
+            <Icons.BarChart3 className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalVersions}</div>
