@@ -188,9 +188,9 @@ const FolderNodeComponent = ({ node, style, dragHandle, onRefresh }: FolderNodeC
 };
 
 export const FolderSidebar = ({ onSelectFolder, selectedFolder }: FolderSidebarProps) => {
-  // Note: No longer need modal state for refresh tracking - using callbacks
   const [data, setData] = useState<FolderNode[]>([]);
   const treeRef = useRef<TreeApi<FolderNode>>(null);
+  const [initialFolderSelected, setInitialFolderSelected] = useState(false);
 
   const fetchFolders = async () => {
     try {
@@ -225,64 +225,50 @@ export const FolderSidebar = ({ onSelectFolder, selectedFolder }: FolderSidebarP
 
   // Auto-select folder when data is loaded (either persisted or default)
   useEffect(() => {
-    if (data.length > 0 && treeRef.current) {
+    if (data.length > 0 && treeRef.current && !initialFolderSelected) {
       // Small delay to ensure tree is rendered
       setTimeout(() => {
         const tree = treeRef.current;
         if (tree && tree.root.children && tree.root.children.length > 0) {
+          let folderSelected = false;
           // If we have a selected folder from props, try to find and select it
           if (selectedFolder && selectedFolder.id) {
             const findAndSelectNode = (nodes: NodeApi<FolderNode>[]): boolean => {
               for (const node of nodes) {
                 if (node.data.id === selectedFolder.id) {
-                  // Expand the node if it has children
-                  if (node.children && node.children.length > 0) {
-                    node.open();
-                  }
+                  if (node.children && node.children.length > 0) node.open();
                   node.select();
                   return true;
                 }
-                // Recursively search in children
                 if (node.children && findAndSelectNode(node.children)) {
+                  node.open(); // Open parent to reveal child
                   return true;
                 }
               }
               return false;
             };
 
-            // Try to find the persisted folder
-            if (!findAndSelectNode(tree.root.children)) {
-              // If persisted folder not found, fall back to Default
-              const defaultNode = tree.root.children[0];
-              if (defaultNode) {
-                if (defaultNode.children && defaultNode.children.length > 0) {
-                  defaultNode.open();
-                }
-                defaultNode.select();
-                // Only call onSelectFolder if we're not already on Default
-                if (selectedFolder.name !== "Default") {
-                  onSelectFolder("", "Default");
-                }
-              }
+            if (findAndSelectNode(tree.root.children)) {
+              folderSelected = true;
             }
-          } else {
-            // No persisted folder, select Default
+          }
+          
+          // If no folder was selected (either not persisted or not found), select Default
+          if (!folderSelected) {
             const defaultNode = tree.root.children[0];
-            if (defaultNode && tree.selectedNodes.length === 0) {
+            if (defaultNode) {
               if (defaultNode.children && defaultNode.children.length > 0) {
                 defaultNode.open();
               }
               defaultNode.select();
-              // Only call onSelectFolder if we're not already on Default
-              if (selectedFolder?.name !== "Default") {
-                onSelectFolder("", "Default");
-              }
+              onSelectFolder("", "Default");
             }
           }
+          setInitialFolderSelected(true);
         }
       }, 50);
     }
-  }, [data, onSelectFolder, selectedFolder]);
+  }, [data, selectedFolder, initialFolderSelected, onSelectFolder]);
 
   // Note: Removed useEffect refresh pattern - now using onSuccess callbacks in modals
 
