@@ -169,6 +169,63 @@ export async function updatePrompt(
   return updatedPrompt;
 }
 
+interface CreatePromptVersionParams {
+  promptId: string;
+  content: string;
+  changeMessage?: string;
+  versionType: 'minor' | 'major';
+}
+
+export async function createPromptVersion({
+  promptId,
+  content,
+  changeMessage,
+  versionType,
+}: CreatePromptVersionParams) {
+  const user = await requireAuth();
+
+  const prompt = await db.prompt.findUnique({
+    where: { id: promptId, userId: user.id },
+    include: { versions: { orderBy: { createdAt: 'desc' }, take: 1 } },
+  });
+
+  if (!prompt) {
+    throw new Error("Prompt not found");
+  }
+
+  const lastVersion = prompt.versions[0];
+  let newVersionNumber: string;
+
+  if (lastVersion && lastVersion.version) {
+    const [major, minor] = lastVersion.version.split('.').map(Number);
+    if (versionType === 'major') {
+      newVersionNumber = `${major + 1}.0`;
+    } else {
+      newVersionNumber = `${major}.${minor + 1}`;
+    }
+  } else {
+    newVersionNumber = '1.0';
+  }
+
+  const newVersion = await db.promptVersion.create({
+    data: {
+      promptId,
+      content,
+      changeMessage,
+      version: newVersionNumber,
+    },
+  });
+
+  // Also update the main prompt content
+  await db.prompt.update({
+    where: { id: promptId },
+    data: { content },
+  });
+
+  revalidatePath(`/prompts/${promptId}`);
+  return newVersion;
+}
+
 export async function getPromptVersions(promptId: string) {
   const user = await requireAuth();
 

@@ -12,7 +12,8 @@ export type ModalType =
   | 'createTag'
   | 'editTag'
   | 'deleteTag'
-  | 'changePassword';
+  | 'changePassword'
+  | 'saveVersion';
 
 // Simple tag interface for modal data
 export interface TagData {
@@ -26,6 +27,12 @@ export interface TagData {
 interface ModalData {
   folder?: Folder;
   prompt?: Prompt;
+  promptData?: {
+    id: string;
+    content: string;
+    title: string;
+    description: string;
+  };
   tag?: TagData;
   parentId?: string;
   folderId?: string;

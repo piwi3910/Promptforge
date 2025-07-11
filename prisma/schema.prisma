@@ -110,9 +110,11 @@ model Tag {
 model PromptVersion {
   id        String   @id @default(cuid())
   promptId  String
-  prompt    Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
-  content   String
-  createdAt DateTime @default(now())
+  prompt        Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  content       String
+  version       String?
+  changeMessage String?
+  createdAt     DateTime @default(now())
 
   @@index([promptId])
 }

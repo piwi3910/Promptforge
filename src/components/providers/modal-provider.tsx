@@ -12,6 +12,7 @@ import { CreateTagModal } from "../modals/create-tag-modal";
 import { EditTagModal } from "../modals/edit-tag-modal";
 import { DeleteTagModal } from "../modals/delete-tag-modal";
 import { ChangePasswordModal } from "../modals/change-password-modal";
+import { SaveVersionModal } from "../modals/save-version-modal";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -37,6 +38,7 @@ export const ModalProvider = () => {
       <EditTagModal />
       <DeleteTagModal />
       <ChangePasswordModal />
+      <SaveVersionModal />
     </>
   );
 };

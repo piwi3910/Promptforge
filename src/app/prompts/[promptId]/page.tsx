@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronDown, Save, ArrowLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useModal } from "@/hooks/use-modal-store";
 
 export default function PromptPage({
   params,
@@ -37,6 +38,7 @@ export default function PromptPage({
   const debouncedDescription = useDebounce(description, 500);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { onOpen } = useModal();
 
   const languageOptions = ["Markdown", "Text", "JavaScript", "Python", "JSON", "YAML", "XML"];
 
@@ -135,22 +137,12 @@ export default function PromptPage({
     if (isCreateMode) {
       await handleSaveNewPrompt();
     } else if (promptId) {
-      setIsSaving(true);
-      try {
-        await updatePrompt(promptId, {
-          title,
-          content,
-          description,
-        });
-        // Optionally, refetch prompt data to update UI state
-        const fetchedPrompt = await getPromptById(promptId);
-        setPrompt(fetchedPrompt as (Prompt & { tags: Tag[] }) | null);
-      } catch (error) {
-        console.error('Error saving prompt:', error);
-        alert('Failed to save prompt. Please try again.');
-      } finally {
-        setIsSaving(false);
-      }
+      onOpen("saveVersion", {
+        promptData: { id: promptId, content, title, description },
+        onSuccess: () => {
+          // Maybe show a toast notification for success
+        },
+      });
     }
   };
 
