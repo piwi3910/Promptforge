@@ -90,7 +90,7 @@ export function TagsManagement({ initialTags }: TagsManagementProps) {
             <Card key={tag.id} className="relative group text-sm">
               <CardContent className="p-3">
                 <div className="flex items-start justify-between">
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 font-semibold">
                       <TagIcon className="h-3 w-3" />
                       {tag.name}
