@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Edit, Trash2, Tag as TagIcon } from "lucide-react";
+import { Plus, Trash2, Tag as TagIcon } from "lucide-react";
 import { useModal, type TagData } from "@/hooks/use-modal-store";
 
 interface Tag {
@@ -87,7 +87,11 @@ export function TagsManagement({ initialTags }: TagsManagementProps) {
       ) : (
         <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {tags.map((tag) => (
-            <Card key={tag.id} className="relative group text-sm">
+            <Card
+              key={tag.id}
+              className="relative group text-sm cursor-pointer hover:bg-accent"
+              onClick={() => handleEditTag(tag)}
+            >
               <CardContent className="p-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
@@ -95,26 +99,16 @@ export function TagsManagement({ initialTags }: TagsManagementProps) {
                       <TagIcon className="h-3 w-3" />
                       {tag.name}
                     </div>
-                    {tag.description && (
-                      <p className="text-xs text-muted-foreground mt-1 truncate">
-                        {tag.description}
-                      </p>
-                    )}
                   </div>
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6"
-                      onClick={() => handleEditTag(tag)}
-                    >
-                      <Edit className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
                       className="h-6 w-6 text-destructive hover:text-destructive"
-                      onClick={() => handleDeleteTag(tag)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteTag(tag);
+                      }}
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>
