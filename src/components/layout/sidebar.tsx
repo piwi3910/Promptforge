@@ -4,6 +4,8 @@ import {
   FileText,
   Tag,
   Zap,
+  Users,
+  Tags,
 } from "lucide-react"
 
 export function Sidebar() {
@@ -30,7 +32,14 @@ export function Sidebar() {
               className="flex items-center gap-3 rounded-lg px-3 py-2 text-orange-100 transition-all hover:text-white hover:bg-orange-600"
             >
               <FileText className="h-4 w-4" />
-              Prompts
+              My Prompts
+            </Link>
+            <Link
+              href="/shared-prompts"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-orange-100 transition-all hover:text-white hover:bg-orange-600"
+            >
+              <Users className="h-4 w-4" />
+              Shared Prompts
             </Link>
             <Link
               href="/tags"
@@ -38,6 +47,13 @@ export function Sidebar() {
             >
               <Tag className="h-4 w-4" />
               Tags
+            </Link>
+            <Link
+              href="/group-by-tags"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-orange-100 transition-all hover:text-white hover:bg-orange-600"
+            >
+              <Tags className="h-4 w-4" />
+              Group by Tags
             </Link>
           </nav>
         </div>
