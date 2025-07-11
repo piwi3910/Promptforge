@@ -131,6 +131,29 @@ export default function PromptPage({
     router.push('/prompts');
   };
 
+  const handleSave = async () => {
+    if (isCreateMode) {
+      await handleSaveNewPrompt();
+    } else if (promptId) {
+      setIsSaving(true);
+      try {
+        await updatePrompt(promptId, {
+          title,
+          content,
+          description,
+        });
+        // Optionally, refetch prompt data to update UI state
+        const fetchedPrompt = await getPromptById(promptId);
+        setPrompt(fetchedPrompt as (Prompt & { tags: Tag[] }) | null);
+      } catch (error) {
+        console.error('Error saving prompt:', error);
+        alert('Failed to save prompt. Please try again.');
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
+
   if (!promptId || (!prompt && !isCreateMode)) {
     return <div>Loading...</div>;
   }
@@ -139,36 +162,35 @@ export default function PromptPage({
     <div className="flex h-full">
       {/* Main section: Editor taking almost all screen */}
       <div className="flex-grow flex flex-col">
-        {/* Title Input for Create Mode */}
-        {isCreateMode && (
-          <div className="p-4 border-b">
-            <div className="flex items-center gap-4">
-              <Button
-                onClick={handleBack}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-              <Input
-                placeholder="Enter prompt title..."
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="flex-grow"
-              />
-              <Button
-                onClick={handleSaveNewPrompt}
-                disabled={isSaving || !title.trim()}
-                className="flex items-center gap-2"
-              >
-                <Save className="h-4 w-4" />
-                {isSaving ? "Creating..." : "Create Prompt"}
-              </Button>
-            </div>
+        {/* Header for both Create and Edit modes */}
+        <div className="p-4 border-b">
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={handleBack}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+            <Input
+              placeholder="Enter prompt title..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="flex-grow"
+              disabled={!isCreateMode && !prompt} // Disable if not create mode and no prompt
+            />
+            <Button
+              onClick={handleSave}
+              disabled={isSaving || !title.trim()}
+              className="flex items-center gap-2"
+            >
+              <Save className="h-4 w-4" />
+              {isSaving ? "Saving..." : "Save"}
+            </Button>
           </div>
-        )}
+        </div>
 
         {/* Description field above language dropdown */}
         <div className="h-32 p-4 border-b">
@@ -209,17 +231,6 @@ export default function PromptPage({
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            {!isCreateMode && (
-              <Button
-                onClick={handleBack}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-            )}
           </div>
         </div>
         
