@@ -147,6 +147,13 @@ export default function PromptPage({
     }
   };
 
+  const handleRestore = async () => {
+    if (!promptId) return;
+    const fetchedPrompt = await getPromptById(promptId);
+    setPrompt(fetchedPrompt as (Prompt & { tags: Tag[], versions: PromptVersion[] }) | null);
+    setContent(fetchedPrompt?.content || "");
+  };
+
   if (!promptId || (!prompt && !isCreateMode)) {
     return <div>Loading...</div>;
   }
@@ -278,7 +285,7 @@ export default function PromptPage({
         </div>
         {!isCreateMode && prompt && (
           <div className="flex-grow">
-            <VersionHistorySidebar promptId={prompt.id} />
+            <VersionHistorySidebar versions={prompt.versions} onRestore={handleRestore} />
           </div>
         )}
       </div>

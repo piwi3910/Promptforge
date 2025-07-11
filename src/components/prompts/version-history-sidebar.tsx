@@ -1,31 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getPromptVersions, restoreVersion } from "@/app/actions/prompt.actions";
+import { restoreVersion } from "@/app/actions/prompt.actions";
 import type { PromptVersion } from "@/generated/prisma";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 import { format } from "date-fns";
 
 interface VersionHistorySidebarProps {
-  promptId: string;
+  versions: PromptVersion[];
+  onRestore: (versionId: string) => void;
 }
 
 export const VersionHistorySidebar = ({
-  promptId,
+  versions,
+  onRestore,
 }: VersionHistorySidebarProps) => {
-  const [versions, setVersions] = useState<PromptVersion[]>([]);
-
-  useEffect(() => {
-    const fetchVersions = async () => {
-      const fetchedVersions = await getPromptVersions(promptId);
-      setVersions(fetchedVersions);
-    };
-    fetchVersions();
-  }, [promptId]);
-
   const handleRestore = async (versionId: string) => {
     await restoreVersion(versionId);
+    onRestore(versionId);
   };
 
   return (

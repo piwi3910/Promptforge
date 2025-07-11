@@ -115,7 +115,6 @@ export async function getPromptById(id: string) {
         orderBy: {
           createdAt: 'desc',
         },
-        take: 1,
       },
     },
   });
