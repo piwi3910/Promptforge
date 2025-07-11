@@ -1,14 +1,15 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
-import { requireAuth } from '@/lib/auth';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
-  try {
-    await requireAuth();
-  } catch {
+  const session = await getServerSession(authOptions);
+  
+  if (!session) {
     redirect('/sign-in');
   }
 
