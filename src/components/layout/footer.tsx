@@ -9,7 +9,7 @@ export function Footer() {
         <div className="flex justify-center items-center">
           {/* Copyright only */}
           <div className="text-sm">
-            <p className="text-white">
+            <p className="!text-white" style={{ color: '#ffffff', fontWeight: 'bold' }}>
               © {currentYear} Pascal Watteel
             </p>
           </div>
@@ -20,7 +20,7 @@ export function Footer() {
         
         {/* Additional info */}
         <div className="mt-3 text-center">
-          <p className="text-xs opacity-75 text-white">
+          <p className="text-xs opacity-75 !text-white" style={{ color: '#ffffff' }}>
             Powered by Dell Technologies Design System
           </p>
         </div>
