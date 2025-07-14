@@ -69,7 +69,7 @@ export function Sidebar() {
         
         {/* Enhanced Navigation */}
         <div className="flex-1 py-4 overflow-hidden">
-          <nav className="grid items-start px-3 text-sm font-medium space-y-2 overflow-hidden">
+          <nav className="grid items-start px-3 text-sm font-medium space-y-3 overflow-hidden">
             {navigationItems.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
               const Icon = item.icon
