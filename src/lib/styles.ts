@@ -57,7 +57,7 @@ export const dellComponents = {
   
   // Professional Navigation with smooth animations
   navItem: {
-    base: "flex items-center gap-1.5 rounded px-1 py-0.5 ml-1 mr-3 transition-all duration-200 group relative",
+    base: "flex items-center gap-1.5 rounded pl-0.5 pr-1 py-0.5 mr-3 transition-all duration-200 group relative",
     default: "!text-white hover:bg-white/10 hover:!text-white",
     active: "bg-white/20 !text-white before:absolute before:left-0 before:w-0.5 before:h-full before:bg-white before:rounded-r",
     indicator: "after:absolute after:right-1 after:w-0 after:h-0 after:transition-all after:duration-200 group-hover:after:w-0.5 group-hover:after:h-0.5 group-hover:after:bg-white group-hover:after:rounded-full",
