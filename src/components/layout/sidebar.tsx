@@ -50,10 +50,10 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="hidden border-r bg-dell-blue-500 shadow-xl md:block">
+    <div className="hidden border-r bg-gray-800 shadow-xl md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
         {/* Enhanced Header with gradient and glow effect */}
-        <div className="flex h-14 items-center border-b border-dell-blue-600 px-4 lg:h-[60px] lg:px-6 bg-gradient-to-r from-dell-blue-500 to-dell-blue-600 relative">
+        <div className="flex h-14 items-center border-b border-gray-700 px-4 lg:h-[60px] lg:px-6 bg-gradient-to-r from-gray-800 to-gray-900 relative">
           <Link
             href="/dashboard"
             className="flex items-center gap-2 font-semibold text-white group hover:scale-[1.02] transition-transform duration-200"
