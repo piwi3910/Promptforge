@@ -77,8 +77,8 @@ export function ResizablePanels({
       
       {/* Resizer */}
       <div
-        className={`w-1 bg-border hover:bg-orange-500 cursor-col-resize transition-colors flex-shrink-0 ${
-          isDragging ? 'bg-orange-500' : ''
+        className={`w-1 bg-border hover:bg-dell-blue-500 cursor-col-resize transition-colors flex-shrink-0 ${
+          isDragging ? 'bg-dell-blue-500' : ''
         }`}
         onMouseDown={handleMouseDown}
       >
