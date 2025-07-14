@@ -50,13 +50,13 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="hidden border-r bg-gray-800 shadow-xl md:block">
+    <div className="hidden border-r bg-gray-800 shadow-xl md:block overflow-hidden">
       <div className="flex h-full max-h-screen flex-col gap-2">
         {/* Enhanced Header with gradient and glow effect */}
         <div className="flex h-14 items-center border-b border-gray-700 px-4 lg:h-[60px] lg:px-6 bg-gradient-to-r from-gray-800 to-gray-900 relative">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 font-semibold text-white group hover:scale-[1.02] transition-transform duration-200"
+            className="flex items-center gap-2 font-semibold text-white group transition-colors duration-200"
           >
             <div className="p-1 rounded-md bg-white/10 group-hover:bg-white/20 transition-colors duration-200">
               <Zap className="h-5 w-5 text-white" />
@@ -68,8 +68,8 @@ export function Sidebar() {
         </div>
         
         {/* Enhanced Navigation */}
-        <div className="flex-1 py-4">
-          <nav className="grid items-start px-3 text-sm font-medium space-y-1">
+        <div className="flex-1 py-4 overflow-hidden">
+          <nav className="grid items-start px-3 text-sm font-medium space-y-1 overflow-hidden">
             {navigationItems.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
               const Icon = item.icon
