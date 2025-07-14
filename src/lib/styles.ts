@@ -58,8 +58,8 @@ export const dellComponents = {
   // Professional Navigation with smooth animations
   navItem: {
     base: "flex items-center gap-3 rounded-lg px-3 py-2 transition-all duration-200 group relative",
-    default: "!text-white hover:bg-white/10 hover:shadow-md hover:scale-[1.02] hover:!text-white",
-    active: "bg-white/20 !text-white shadow-md scale-[1.01] before:absolute before:left-0 before:w-1 before:h-full before:bg-white before:rounded-r",
+    default: "!text-white hover:bg-white/10 hover:!text-white",
+    active: "bg-white/20 !text-white before:absolute before:left-0 before:w-1 before:h-full before:bg-white before:rounded-r",
     indicator: "after:absolute after:right-2 after:w-0 after:h-0 after:transition-all after:duration-200 group-hover:after:w-2 group-hover:after:h-2 group-hover:after:bg-white group-hover:after:rounded-full",
   },
   
