@@ -50,10 +50,10 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="hidden border-r bg-dell-blue-500 shadow-xl md:block">
+    <div className="hidden border-r bg-gray-800 shadow-xl md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
         {/* Enhanced Header with gradient and glow effect */}
-        <div className="flex h-14 items-center border-b border-dell-blue-600 px-4 lg:h-[60px] lg:px-6 bg-gradient-to-r from-dell-blue-500 to-dell-blue-600 relative">
+        <div className="flex h-14 items-center border-b border-gray-700 px-4 lg:h-[60px] lg:px-6 bg-gradient-to-r from-gray-800 to-gray-900 relative">
           <Link
             href="/dashboard"
             className="flex items-center gap-2 font-semibold text-white group hover:scale-[1.02] transition-transform duration-200"
@@ -91,11 +91,11 @@ export function Sidebar() {
                       <Icon className="h-4 w-4 flex-shrink-0 !text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate !text-white" style={{ color: '#ffffff !important' }}>{item.label}</div>
+                      <div className="font-medium truncate !text-white" style={{ color: '#ffffff', fontWeight: 'bold' }}>{item.label}</div>
                       <div className={`
                         text-xs opacity-70 truncate transition-opacity duration-200 !text-white
                         ${isActive ? 'opacity-90' : 'group-hover:opacity-80'}
-                      `} style={{ color: '#ffffff !important' }}>
+                      `} style={{ color: '#ffffff', opacity: '0.9' }}>
                         {item.description}
                       </div>
                     </div>
