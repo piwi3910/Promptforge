@@ -58,7 +58,7 @@ export const dellComponents = {
   // Professional Navigation with smooth animations
   navItem: {
     base: "flex items-center gap-3 rounded-lg px-3 py-2 transition-all duration-200 group relative",
-    default: "text-white hover:bg-white/10 hover:shadow-md hover:scale-[1.02]",
+    default: "text-white hover:bg-white/10 hover:shadow-md hover:scale-[1.02] hover:text-white",
     active: "bg-white/20 text-white shadow-md scale-[1.01] before:absolute before:left-0 before:w-1 before:h-full before:bg-white before:rounded-r",
     indicator: "after:absolute after:right-2 after:w-0 after:h-0 after:transition-all after:duration-200 group-hover:after:w-2 group-hover:after:h-2 group-hover:after:bg-white group-hover:after:rounded-full",
   },
@@ -169,9 +169,11 @@ export function dellInput(state: 'default' | 'error' | 'success' = 'default', cl
 export function dellFolderItem(isSelected: boolean, isDefault?: boolean, className?: ClassValue) {
   return cn(
     "flex items-center py-2 px-3 rounded-md cursor-pointer group relative",
+    // Base text color for good contrast
+    "text-gray-700",
     isSelected
-      ? "bg-dell-blue-100 border-l-4 border-dell-blue-500 shadow-sm scale-[1.01]"
-      : "hover:bg-dell-blue-50 hover:shadow-sm hover:scale-[1.02] transition-all duration-200",
+      ? "bg-dell-blue-100 border-l-4 border-dell-blue-500 shadow-sm scale-[1.01] text-dell-blue-800"
+      : "hover:bg-dell-blue-50 hover:shadow-sm hover:scale-[1.02] hover:text-dell-blue-700 transition-all duration-200",
     isDefault && "font-medium text-dell-blue-600",
     className
   )
