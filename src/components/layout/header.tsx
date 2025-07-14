@@ -8,7 +8,6 @@ import {
   Search,
   Tag,
   Zap,
-  Plus,
   Command,
 } from "lucide-react"
 
@@ -150,25 +149,8 @@ export function Header() {
         </form>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex items-center gap-2">
-        <Button
-          onClick={() => router.push('/prompts/new')}
-          className={dellButton('gradient') + " hidden sm:flex items-center gap-2"}
-        >
-          <Plus className="h-4 w-4" />
-          <span className="hidden lg:inline">New Prompt</span>
-        </Button>
-        
-        {/* Mobile create button */}
-        <Button
-          onClick={() => router.push('/prompts/new')}
-          size="icon"
-          className={dellButton('primary') + " sm:hidden"}
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-        
+      {/* Profile avatar moved to right corner */}
+      <div className="flex items-center justify-end ml-auto">
         <AuthUserButton />
       </div>
     </header>
