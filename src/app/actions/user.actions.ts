@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { requireAuth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
+import { generateRandomUsername } from "@/lib/username-generator";
 
 interface CreateUserParams {
     name: string;
@@ -13,8 +14,33 @@ interface CreateUserParams {
 
 export async function createUser(user: CreateUserParams) {
     try {
+        // Generate unique username
+        let username = generateRandomUsername();
+        let isUnique = false;
+        let attempts = 0;
+        
+        while (!isUnique && attempts < 10) {
+            const existingUser = await db.user.findUnique({
+                where: { username },
+            });
+            
+            if (!existingUser) {
+                isUnique = true;
+            } else {
+                username = generateRandomUsername();
+                attempts++;
+            }
+        }
+
+        if (attempts >= 10) {
+            throw new Error("Failed to generate unique username");
+        }
+
         const newUser = await db.user.create({
-            data: user,
+            data: {
+                ...user,
+                username,
+            },
         });
         return newUser;
     } catch (error) {

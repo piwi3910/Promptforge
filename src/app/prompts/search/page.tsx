@@ -1,14 +1,18 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { searchPrompts } from "@/app/actions/prompt.actions";
 import type { Prompt, Tag } from "@/generated/prisma";
 import { PromptList } from "@/components/prompts/prompt-list";
 
-type PromptWithTags = Prompt & { tags: Tag[] };
+type PromptWithTags = Prompt & {
+  tags: Tag[];
+  likeCount: number;
+  isLikedByUser: boolean;
+};
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   const [prompts, setPrompts] = useState<PromptWithTags[]>([]);
@@ -30,5 +34,13 @@ export default function SearchPage() {
       </h1>
       <PromptList prompts={prompts} />
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div>Loading search results...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }

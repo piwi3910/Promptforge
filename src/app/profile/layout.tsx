@@ -6,7 +6,7 @@ import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 
-const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+const ProfileLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await getServerSession(authOptions);
   
   if (!session) {
@@ -27,4 +27,4 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default DashboardLayout;
+export default ProfileLayout;

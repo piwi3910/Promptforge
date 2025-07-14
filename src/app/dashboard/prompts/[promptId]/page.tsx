@@ -5,7 +5,6 @@ import { getPromptById, updatePrompt, createPrompt } from "@/app/actions/prompt.
 import { Editor } from "@/components/editor/editor";
 import type { Prompt, Tag } from "@/generated/prisma";
 import { useDebounce } from "@/hooks/use-debounce";
-import { VersionHistorySidebar } from "@/components/prompts/version-history-sidebar";
 import { TagInput } from "@/components/prompts/tag-input";
 import {
   DropdownMenu,
@@ -270,7 +269,10 @@ export default function PromptPage({
         </div>
         {!isCreateMode && prompt && (
           <div className="flex-grow">
-            <VersionHistorySidebar promptId={prompt.id} />
+            {/* Version history sidebar - to be implemented with proper props */}
+            <div className="p-4 text-sm text-muted-foreground">
+              Version history coming soon...
+            </div>
           </div>
         )}
       </div>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { generateRandomUsername } from "@/lib/username-generator"
 
 const registerSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -29,12 +30,38 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
+    // Generate unique username
+    let username = generateRandomUsername();
+    let isUnique = false;
+    let attempts = 0;
+    
+    while (!isUnique && attempts < 10) {
+      const existingUser = await db.user.findUnique({
+        where: { username },
+      });
+      
+      if (!existingUser) {
+        isUnique = true;
+      } else {
+        username = generateRandomUsername();
+        attempts++;
+      }
+    }
+
+    if (attempts >= 10) {
+      return NextResponse.json(
+        { error: "Failed to generate unique username" },
+        { status: 500 }
+      )
+    }
+
     // Create user
     const user = await db.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
+        username,
       },
       select: {
         id: true,

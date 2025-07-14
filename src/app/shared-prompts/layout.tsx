@@ -1,18 +1,9 @@
 import React from 'react';
-import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth-config';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 
-const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
-  const session = await getServerSession(authOptions);
-  
-  if (!session) {
-    redirect('/sign-in');
-  }
-
+const SharedPromptsLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[196px_1fr] lg:grid-cols-[224px_1fr] bg-background">
       <Sidebar />
@@ -27,4 +18,4 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default DashboardLayout;
+export default SharedPromptsLayout;

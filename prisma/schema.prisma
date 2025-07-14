@@ -21,11 +21,69 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  // Profile management fields
+  username      String       @unique
+  avatarType    AvatarType   @default(INITIALS)
+  profilePicture String?
+  gravatarEmail String?
+  // Reputation system
+  reputationScore Int        @default(0)
+  badges        UserBadge[]
+  // Metadata
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  // Relations
   accounts      Account[]
   sessions      Session[]
   folders       Folder[]
   prompts       Prompt[]
   promptLikes   PromptLike[]
+  promptComments PromptComment[]
+  promptViews   PromptView[]
+  promptCopies  PromptCopy[]
+  collections   Collection[]
+  following     UserFollow[] @relation("UserFollowing")
+  followers     UserFollow[] @relation("UserFollowers")
+  publishedPrompts SharedPrompt[]
+  moderatedPrompts SharedPrompt[] @relation("ModeratedBy")
+}
+
+enum AvatarType {
+  INITIALS
+  GRAVATAR
+  UPLOAD
+}
+
+enum BadgeType {
+  CREATOR
+  POPULAR
+  HELPFUL
+  VERIFIED
+  MODERATOR
+  EARLY_ADOPTER
+}
+
+model UserBadge {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      BadgeType
+  title     String
+  description String?
+  earnedAt  DateTime  @default(now())
+
+  @@unique([userId, type])
+}
+
+model UserFollow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
 }
 
 model Account {
@@ -92,12 +150,136 @@ model Prompt {
   tags        Tag[]
   versions    PromptVersion[]
   likes       PromptLike[]
+  // Marketplace publishing
+  sharedPrompt SharedPrompt?
   order       Int?
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
   @@index([userId])
   @@index([folderId])
+}
+
+model SharedPrompt {
+  id            String                @id @default(cuid())
+  promptId      String                @unique
+  prompt        Prompt                @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  authorId      String
+  author        User                  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?
+  content       String
+  isPublished   Boolean               @default(false)
+  visibility    PromptVisibility      @default(PUBLIC)
+  status        ModerationStatus      @default(PENDING)
+  moderatedBy   String?
+  moderator     User?                 @relation("ModeratedBy", fields: [moderatedBy], references: [id])
+  moderatedAt   DateTime?
+  rejectionReason String?
+  // Analytics
+  viewCount     Int                   @default(0)
+  likeCount     Int                   @default(0)
+  commentCount  Int                   @default(0)
+  copyCount     Int                   @default(0)
+  // Collections
+  collections   CollectionPrompt[]
+  // Social features
+  comments      PromptComment[]
+  views         PromptView[]
+  copies        PromptCopy[]
+  // Timestamps
+  publishedAt   DateTime?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  @@index([authorId])
+  @@index([status])
+  @@index([isPublished])
+  @@index([publishedAt])
+}
+
+enum PromptVisibility {
+  PUBLIC
+  UNLISTED
+  PRIVATE
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  FLAGGED
+}
+
+model Collection {
+  id          String             @id @default(cuid())
+  name        String
+  description String?
+  userId      String
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic    Boolean            @default(false)
+  prompts     CollectionPrompt[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([isPublic])
+}
+
+model CollectionPrompt {
+  id             String       @id @default(cuid())
+  collectionId   String
+  collection     Collection   @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  sharedPromptId String
+  sharedPrompt   SharedPrompt @relation(fields: [sharedPromptId], references: [id], onDelete: Cascade)
+  addedAt        DateTime     @default(now())
+
+  @@unique([collectionId, sharedPromptId])
+}
+
+model PromptComment {
+  id             String       @id @default(cuid())
+  content        String
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sharedPromptId String
+  sharedPrompt   SharedPrompt @relation(fields: [sharedPromptId], references: [id], onDelete: Cascade)
+  parentId       String?
+  parent         PromptComment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies        PromptComment[] @relation("CommentReplies")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([sharedPromptId])
+  @@index([userId])
+  @@index([parentId])
+}
+
+model PromptView {
+  id             String       @id @default(cuid())
+  userId         String?
+  user           User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  sharedPromptId String
+  sharedPrompt   SharedPrompt @relation(fields: [sharedPromptId], references: [id], onDelete: Cascade)
+  ipAddress      String?
+  userAgent      String?
+  viewedAt       DateTime     @default(now())
+
+  @@index([sharedPromptId])
+  @@index([userId])
+}
+
+model PromptCopy {
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sharedPromptId String
+  sharedPrompt   SharedPrompt @relation(fields: [sharedPromptId], references: [id], onDelete: Cascade)
+  copiedAt       DateTime     @default(now())
+
+  @@unique([userId, sharedPromptId])
+  @@index([sharedPromptId])
+  @@index([userId])
 }
 
 model Tag {
@@ -132,4 +314,48 @@ model PromptLike {
   @@unique([promptId, userId])
   @@index([promptId])
   @@index([userId])
+}
+
+// Content moderation models
+model ModerationRule {
+  id          String              @id @default(cuid())
+  name        String              @unique
+  description String?
+  pattern     String              // Regex pattern or keyword
+  severity    ModerationSeverity
+  action      ModerationAction
+  isActive    Boolean             @default(true)
+  logs        ModerationLog[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+enum ModerationSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ModerationAction {
+  FLAG
+  BLOCK
+  REJECT
+  REQUIRE_REVIEW
+}
+
+model ModerationLog {
+  id          String            @id @default(cuid())
+  contentType String            // 'prompt', 'comment', etc.
+  contentId   String
+  ruleId      String?
+  rule        ModerationRule?   @relation(fields: [ruleId], references: [id])
+  action      ModerationAction
+  reason      String?
+  automated   Boolean           @default(true)
+  reviewedBy  String?
+  createdAt   DateTime          @default(now())
+
+  @@index([contentType, contentId])
+  @@index([createdAt])
 }
