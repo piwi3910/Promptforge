@@ -4,25 +4,15 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-gradient-to-r from-dell-blue-500 to-dell-blue-600 py-6 px-6 mt-auto">
+    <footer className="bg-gray-100 border-t border-gray-200 py-6 px-6 mt-auto">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-center items-center">
           {/* Copyright only */}
           <div className="text-sm">
-            <p className="!text-white" style={{ color: '#ffffff', fontWeight: 'bold' }}>
+            <p className="!text-gray-800" style={{ color: '#1f2937', fontWeight: 'bold' }}>
               © {currentYear} Pascal Watteel
             </p>
           </div>
-        </div>
-        
-        {/* Subtle gradient line */}
-        <div className="mt-4 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-        
-        {/* Additional info */}
-        <div className="mt-3 text-center">
-          <p className="text-xs opacity-75 !text-white" style={{ color: '#ffffff' }}>
-            Powered by Dell Technologies Design System
-          </p>
         </div>
       </div>
     </footer>
