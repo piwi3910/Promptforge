@@ -6,7 +6,6 @@ import { Editor } from "@/components/editor/editor";
 import type { Prompt, Tag, PromptVersion } from "@/generated/prisma";
 import { useDebounce } from "@/hooks/use-debounce";
 import { VersionHistorySidebar } from "@/components/prompts/version-history-sidebar";
-import { TagInput } from "@/components/prompts/tag-input";
 import { EnhancedTagInput } from "@/components/prompts/enhanced-tag-input";
 import {
   DropdownMenu,
@@ -154,6 +153,14 @@ export default function PromptPage({
     setContent(fetchedPrompt?.content || "");
   };
 
+  const handleTagsChange = async (newTags: string[]) => {
+    setTags(newTags);
+    if (!isCreateMode && promptId) {
+      // Update tags in real-time for edit mode
+      await updatePrompt(promptId, { tags: newTags });
+    }
+  };
+
   if (!promptId || (!prompt && !isCreateMode)) {
     return <div>Loading...</div>;
   }
@@ -162,36 +169,40 @@ export default function PromptPage({
     <div className="flex h-full">
       {/* Main section: Editor taking almost all screen */}
       <div className="flex-grow flex flex-col">
-        {/* Title Input for Create Mode */}
-        {isCreateMode && (
-          <div className="p-4 border-b">
-            <div className="flex items-center gap-4">
-              <Button
-                onClick={handleBack}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-              <Input
-                placeholder="Enter prompt title..."
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="flex-grow"
-              />
-              <Button
-                onClick={handleSaveNewPrompt}
-                disabled={isSaving || !title.trim()}
-                className="flex items-center gap-2"
-              >
-                <Save className="h-4 w-4" />
-                {isSaving ? "Creating..." : "Create Prompt"}
-              </Button>
-            </div>
+        {/* Unified Header */}
+        <div className="p-4 border-b">
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={handleBack}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+            <Input
+              placeholder="Enter prompt title..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="flex-grow text-lg font-semibold"
+            />
+            <Button
+              onClick={isCreateMode ? handleSaveNewPrompt : handleSave}
+              disabled={isSaving || !title.trim()}
+              className="flex items-center gap-2"
+            >
+              <Save className="h-4 w-4" />
+              {isCreateMode
+                ? isSaving
+                  ? "Creating..."
+                  : "Create Prompt"
+                : isSaving
+                ? "Saving..."
+                : "Save"}
+            </Button>
           </div>
-        )}
+        </div>
 
         {/* Description field above language dropdown */}
         <div className="h-32 p-4 border-b">
@@ -232,31 +243,10 @@ export default function PromptPage({
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            {!isCreateMode && (
-              <div className="flex items-center gap-2">
-                {prompt?.versions?.[0]?.version && (
-                  <span className="text-sm text-gray-500">
-                    Version: {prompt.versions[0].version}
-                  </span>
-                )}
-                <Button
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className="flex items-center gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  {isSaving ? "Saving..." : "Save"}
-                </Button>
-                <Button
-                  onClick={handleBack}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Back
-                </Button>
-              </div>
+            {!isCreateMode && prompt?.versions?.[0]?.version && (
+              <span className="text-sm text-gray-500">
+                Version: {prompt.versions[0].version}
+              </span>
             )}
           </div>
         </div>
@@ -270,18 +260,14 @@ export default function PromptPage({
       {/* Right sidebar: TagInput at top, VersionHistorySidebar below */}
       <div className="w-80 border-l flex flex-col">
         <div className="h-32 p-4 border-b">
-          {isCreateMode ? (
-            <div>
-              <label className="text-sm font-medium mb-2 block">Tags</label>
-              <EnhancedTagInput
-                selectedTags={tags}
-                onTagsChange={setTags}
-                placeholder="Add tags..."
-              />
-            </div>
-          ) : (
-            prompt && <TagInput promptId={prompt.id} initialTags={prompt.tags} />
-          )}
+          <div>
+            <label className="text-sm font-medium mb-2 block">Tags</label>
+            <EnhancedTagInput
+              selectedTags={tags}
+              onTagsChange={handleTagsChange}
+              placeholder="Add tags..."
+            />
+          </div>
         </div>
         {!isCreateMode && prompt && (
           <div className="flex-grow">

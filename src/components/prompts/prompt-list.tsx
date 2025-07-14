@@ -9,6 +9,7 @@ import { getPromptsByFolder, movePrompt } from "@/app/actions/prompt.actions";
 import type { Prompt, Tag } from "@/generated/prisma";
 import Link from "next/link";
 import { useModal } from "@/hooks/use-modal-store";
+import { dellCard, dellBadge, dellButton } from "@/lib/styles";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,22 +38,31 @@ type PromptWithTags = Prompt & { tags: Tag[] };
 
 const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
   const { onOpen } = useModal();
+  const [isHovered, setIsHovered] = useState(false);
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
+    isDragging,
   } = useSortable({ id: prompt.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    opacity: isDragging ? 0.5 : 1,
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes}>
-      <Card className="mb-4 hover:bg-muted">
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Card className={dellCard('interactive') + " mb-4 group relative overflow-hidden"}>
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
             <Link href={`/prompts/${prompt.id}`} className="flex-grow" {...listeners}>
@@ -121,12 +131,21 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2">
-            {prompt.tags.map((tag) => (
-              <Badge key={tag.id} variant="secondary">
+          <div className="flex flex-wrap gap-1.5">
+            {prompt.tags.slice(0, 3).map((tag) => (
+              <Badge
+                key={tag.id}
+                className={dellBadge('default') + " cursor-pointer"}
+                title={tag.description || tag.name}
+              >
                 {tag.name}
               </Badge>
             ))}
+            {prompt.tags.length > 3 && (
+              <Badge variant="outline" className="text-dell-gray-500 hover:bg-dell-gray-50 transition-colors duration-200">
+                +{prompt.tags.length - 3} more
+              </Badge>
+            )}
           </div>
         </CardContent>
       </Card>

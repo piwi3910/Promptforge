@@ -51,7 +51,7 @@ export default function Prompts() {
         <div className="pb-4 px-4">
           <div className="flex justify-between items-center mb-4 -mt-2">
             <span className="font-medium">
-              Selected folder: <span className="text-orange-500">{selectedFolder.name}</span>
+              Selected folder: <span className="text-blue-500">{selectedFolder.name}</span>
             </span>
             <Button
               onClick={() => router.push(`/prompts/new?folderId=${selectedFolder.id || ''}`)}

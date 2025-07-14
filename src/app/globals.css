@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @layer utilities {
+  /* Professional Animations */
   @keyframes fade-in {
     from {
       opacity: 0;
@@ -12,43 +13,171 @@
     }
   }
 
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: -200px 0;
+    }
+    to {
+      background-position: calc(200px + 100%) 0;
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(0, 125, 184, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(0, 125, 184, 0);
+    }
+  }
+
   .animate-fade-in {
     animation: fade-in 0.8s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.4s ease-out;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite linear;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200px 100%;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s infinite;
+  }
+
+  /* Enhanced hover effects */
+  .hover-lift {
+    transition: all 0.2s ease-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .hover-scale {
+    transition: transform 0.2s ease-out;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+
+  /* Text utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  /* Glass morphism */
+  .glass {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Professional shadows */
+  .shadow-soft {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .shadow-medium {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .shadow-large {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .shadow-dell-blue {
+    box-shadow: 0 4px 12px rgba(0, 125, 184, 0.25);
   }
 }
 
 @layer base {
   :root {
-    /* Modern light theme with off-white background */
-    --background: 0 0% 98%; /* #FAFAFA - slightly off-white */
-    --foreground: 224 71% 8%; /* #18181B - dark text */
+    /* Dell Technologies Design System */
+    --background: 0 0% 98%; /* #FAFAFA - clean background */
+    --foreground: 218 47% 12%; /* #1A1E23 - Dell dark text */
 
     --card: 0 0% 100%; /* #FFFFFF - white cards */
-    --card-foreground: 224 71% 8%;
+    --card-foreground: 218 47% 12%;
  
     --popover: 0 0% 100%;
-    --popover-foreground: 224 71% 8%;
+    --popover-foreground: 218 47% 12%;
  
-    --primary: 24 95% 53%; /* #FF6B0A - vibrant orange primary */
-    --primary-foreground: 0 0% 98%;
+    --primary: 201 100% 36%; /* #007DB8 - Dell Blue */
+    --primary-foreground: 0 0% 100%;
  
-    --secondary: 220 14.3% 91.2%; /* #E4E4E7 - slightly darker gray */
-    --secondary-foreground: 220 8.9% 46.1%;
+    --secondary: 213 13% 93%; /* #F0F2F4 - Dell light gray */
+    --secondary-foreground: 218 47% 12%;
  
-    --muted: 220 14.3% 95.9%; /* #F1F5F9 */
-    --muted-foreground: 220 8.9% 46.1%; /* #64748B */
+    --muted: 210 14% 97%; /* #F8F9FA - very light gray */
+    --muted-foreground: 215 16% 47%; /* #6B7280 - muted text */
  
-    --accent: 33 100% 50%; /* #FF8500 - accent orange */
-    --accent-foreground: 0 0% 98%;
+    --accent: 201 89% 48%; /* #0F8CE6 - Dell accent blue */
+    --accent-foreground: 0 0% 100%;
+
+    /* Dell Interactive state colors */
+    --dell-blue-hover: 201 100% 95%; /* Very light Dell blue for hover */
+    --dell-blue-selected: 201 100% 90%; /* Light Dell blue for selection */
+    --dell-blue-border: 201 100% 36%; /* Dell blue border */
+    --dell-gray-hover: 210 14% 95%; /* Light gray hover */
  
     --destructive: 0 84.2% 60.2%; /* #EF4444 */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 91%; /* #E2E8F0 - subtle borders */
+    --border: 213 13% 87%; /* #DDE1E5 - Dell subtle borders */
     --input: 0 0% 100%; /* #FFFFFF - white inputs */
-    --ring: 262 83% 66%; /* #8B5CF6 */
+    --ring: 201 100% 36%; /* #007DB8 - Dell blue focus ring */
 
-    --radius: 0.75rem; /* 12px for modern rounded corners */
+    --radius: 0.5rem; /* 8px for cleaner, more corporate look */
   }
  
   .dark {
@@ -89,26 +218,13 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     font-weight: 400;
-    line-height: 1.5;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
   }
 
-  /* Improved glass morphism and modern effects */
-  .glass {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .shadow-soft {
-    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.1), 0 4px 12px -4px rgba(0, 0, 0, 0.08);
-  }
-
-  .shadow-medium {
-    box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.12), 0 8px 24px -8px rgba(0, 0, 0, 0.1);
-  }
 }

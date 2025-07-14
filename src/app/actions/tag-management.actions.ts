@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { requireAuth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -168,6 +169,56 @@ export async function getAllTags() {
     return tags;
   } catch (error) {
     console.error("Error fetching tags:", error);
+    throw error;
+  }
+}
+
+export async function getTagsWithPrompts() {
+  try {
+    const user = await requireAuth();
+
+    const tags = await db.tag.findMany({
+      include: {
+        prompts: {
+          where: {
+            userId: user.id
+          },
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+          orderBy: {
+            updatedAt: 'desc'
+          }
+        },
+        _count: {
+          select: {
+            prompts: {
+              where: {
+                userId: user.id
+              }
+            }
+          }
+        }
+      },
+      orderBy: [
+        {
+          prompts: {
+            _count: 'desc'
+          }
+        },
+        {
+          name: 'asc'
+        }
+      ]
+    });
+
+    return tags;
+  } catch (error) {
+    console.error("Error fetching tags with prompts:", error);
     throw error;
   }
 }

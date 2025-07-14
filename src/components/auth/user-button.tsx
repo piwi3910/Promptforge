@@ -28,7 +28,7 @@ export const AuthUserButton = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white font-medium">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-white font-medium">
             {session.user.name?.[0]?.toUpperCase() || session.user.email?.[0]?.toUpperCase() || "U"}
           </div>
         </Button>

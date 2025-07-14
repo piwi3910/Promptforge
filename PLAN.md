@@ -17,15 +17,16 @@ This document outlines a detailed, step-by-step plan to build the AI Prompt Mana
   - **Step Dependencies**: None
   - **User Instructions**: Create a `.env.local` file by copying `.env.example` and fill in the necessary API keys and secrets for your database provider (e.g., Supabase).
 
-- [x] **Step 2: Configure TailwindCSS with Design System**
-  - **Task**: Configure TailwindCSS to match the design system specified in `design.md`. This involves setting up the color palette, font families (Inter and JetBrains Mono), font sizes, spacing system, and border radii. Create a basic layout to test the configuration.
+- [x] **Step 2: Configure TailwindCSS with Dell Technologies Design System**
+  - **Task**: Configure TailwindCSS with Dell Technologies brand colors, replacing orange with Dell Blue (#007DB8). Implement comprehensive design system with standardized colors, typography, and component patterns for enterprise-grade consistency.
   - **Files**:
-    - `tailwind.config.ts`: Extend the default theme with custom colors, fonts, and spacing from `design.md`.
-    - `app/globals.css`: Import TailwindCSS base styles and define global styles, including body background color and font settings.
-    - `app/layout.tsx`: Set up the root layout, apply the `Inter` font to the body, and wrap children with a basic container.
-    - `app/page.tsx`: Create a simple landing page with a heading and a few elements to verify the theme is applied correctly.
+    - `tailwind.config.ts`: Extend theme with Dell blue color palette (`dell-blue-*`, `dell-gray-*`), override orange colors with Dell blue, add spacing and typography tokens.
+    - `app/globals.css`: Define Dell Technologies CSS custom properties, Dell blue as primary color, corporate typography settings.
+    - `lib/styles.ts`: Centralized design system with `dellColors`, `dellComponents`, and standardized component builders.
+    - `app/layout.tsx`: Corporate font configuration for Dell branding.
+    - `app/page.tsx`: Landing page with Dell blue gradient and professional styling.
   - **Step Dependencies**: Step 1
-  - **User Instructions**: Verify that the fonts and colors on the home page match the design specifications.
+  - **User Instructions**: Verify Dell blue colors throughout the application and professional corporate appearance.
 
 - [x] **Step 3: Build Foundational UI Components**
   - **Task**: Create a set of core, reusable UI components based on the `design.md` specifications. This includes `Button`, `Card`, `Input`, and `Label`. These components will form the building blocks of the application's UI.
@@ -125,7 +126,30 @@ This document outlines a detailed, step-by-step plan to build the AI Prompt Mana
   - **Step Dependencies**: Step 10
   - **User Instructions**: As you edit a prompt, new versions should appear in the right sidebar. You should be able to click a version and restore it.
 
-## **Section 5: Advanced Features & Polish**
+## **Section 5: Dell Technologies Design System Implementation**
+- [x] **Step 15: Dell Technologies Brand Transformation**
+  - **Task**: Complete transformation from orange theme to Dell Technologies blue branding. Systematically find and replace all hardcoded orange colors with Dell blue equivalents across all components, charts, and interactive elements.
+  - **Files**:
+    - `components/layout/sidebar.tsx`: Replace orange navigation with Dell blue background, hover states, and text colors.
+    - `components/layout/footer.tsx`: Update footer background from orange to Dell blue.
+    - `components/dashboard/dashboard-analytics.tsx`: Transform all chart colors, icons, progress indicators, and data visualization to Dell blue palette.
+    - `components/auth/user-button.tsx`: Update user avatar background to Dell blue.
+    - `app/page.tsx`: Change landing page hero gradient from orange to Dell blue.
+    - `components/folders/folder-sidebar.tsx`: Update folder icons and selection states to Dell blue.
+    - `components/prompts/tagged-prompts-list.tsx`: Update text highlights to Dell blue.
+  - **Step Dependencies**: Step 2
+  - **User Instructions**: Verify complete elimination of orange colors and consistent Dell blue branding throughout the application.
+
+- [x] **Step 16: Centralized Design System Architecture**
+  - **Task**: Implement comprehensive Tailwind-based design system ensuring all components use standardized, centrally-defined patterns instead of hardcoded styles.
+  - **Files**:
+    - `tailwind.config.ts`: Enhanced with complete Dell color system (`dell-blue-*`, `dell-gray-*`, `dell-accent-*`), design tokens, and standardized spacing.
+    - `lib/styles.ts`: Comprehensive design system with `dellColors` object, `dellComponents` patterns, and component builders (`dellCard()`, `dellButton()`, `dellNavItem()`).
+    - `lib/design-system.md`: Complete documentation and migration guide for standardized component patterns.
+  - **Step Dependencies**: Step 15
+  - **User Instructions**: All new components should use the centralized design system functions for consistency and maintainability.
+
+## **Section 6: Advanced Features & Polish**
 - [x] **Step 12: Implement Drag-and-Drop Organization**
   - **Task**: Add drag-and-drop functionality using `@dnd-kit` to reorder prompts within a folder and move prompts between folders in the sidebar. This will involve optimistic UI updates for a smooth user experience.
   - **Files**:

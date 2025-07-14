@@ -190,8 +190,17 @@ export const EnhancedTagInput = ({
             ref={dropdownRef}
             className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-md max-h-60 overflow-auto"
           >
-            {filteredTags.length > 0 ? (
+            {filteredTags.length > 0 || (inputValue.trim() && !availableTags.some(tag => tag.name.toLowerCase() === inputValue.toLowerCase())) ? (
               <>
+                {inputValue.trim() && !availableTags.some(tag => tag.name.toLowerCase() === inputValue.toLowerCase()) && (
+                  <div
+                    onClick={createNewTag}
+                    className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground flex items-center gap-2 border-b"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Create &quot;{inputValue.trim()}&quot;
+                  </div>
+                )}
                 {filteredTags.map((tag, index) => (
                   <div
                     key={tag.id}
@@ -207,17 +216,6 @@ export const EnhancedTagInput = ({
                     )}
                   </div>
                 ))}
-                {inputValue.trim() && !availableTags.some(tag => tag.name.toLowerCase() === inputValue.toLowerCase()) && (
-                  <div className="border-t">
-                    <div
-                      onClick={createNewTag}
-                      className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground flex items-center gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Create &quot;{inputValue.trim()}&quot;
-                    </div>
-                  </div>
-                )}
               </>
             ) : inputValue.trim() ? (
               <div
@@ -229,7 +227,7 @@ export const EnhancedTagInput = ({
               </div>
             ) : (
               <div className="px-3 py-2 text-muted-foreground text-sm">
-                No tags available
+                No matching tags found. Start typing to create a new tag.
               </div>
             )}
           </div>

@@ -23,6 +23,24 @@ export async function getPromptsByFolder(folderId?: string) {
   return prompts;
 }
 
+export async function getAllPrompts() {
+  const user = await requireAuth();
+
+  const prompts = await db.prompt.findMany({
+    where: {
+      userId: user.id,
+    },
+    include: {
+      tags: true,
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
+
+  return prompts;
+}
+
 export async function renamePrompt(id: string, title: string) {
   const user = await requireAuth();
 

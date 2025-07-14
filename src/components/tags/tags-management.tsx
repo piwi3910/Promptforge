@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Trash2, Tag as TagIcon } from "lucide-react";
 import { useModal, type TagData } from "@/hooks/use-modal-store";
+import { cardHover, sectionSpacing } from "@/lib/styles";
 
 interface Tag {
   id: string;
@@ -56,7 +57,7 @@ export function TagsManagement({ initialTags }: TagsManagementProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={sectionSpacing("pt-4")}>
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold">Your Tags</h2>
@@ -89,7 +90,7 @@ export function TagsManagement({ initialTags }: TagsManagementProps) {
           {tags.map((tag) => (
             <Card
               key={tag.id}
-              className="relative group text-sm cursor-pointer hover:bg-accent"
+              className={cardHover("relative group text-sm")}
               onClick={() => handleEditTag(tag)}
             >
               <CardContent className="p-3">

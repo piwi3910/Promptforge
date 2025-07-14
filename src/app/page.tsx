@@ -104,7 +104,7 @@ export default function Home() {
           
           <div className="relative z-10">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 animate-fade-in">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-600">
                 Your AI Prompts,
               </span>
               <br />

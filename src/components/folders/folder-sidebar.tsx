@@ -6,6 +6,7 @@ import { Icons } from "../ui/icons";
 import { Button } from "../ui/button";
 import { getFolders } from "@/app/actions/folder.actions";
 import { useModal } from "@/hooks/use-modal-store";
+import { folderItem } from "@/lib/styles";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,9 +66,11 @@ const FolderNodeComponent = ({ node, style, dragHandle, onRefresh }: FolderNodeC
   return (
     <div
       style={style}
-      className={`flex items-center py-1 px-2 rounded-md hover:bg-muted cursor-pointer group ${
-        node.isSelected ? 'bg-orange-100 border-l-4 border-orange-500' : ''
-      } ${node.data.isDefault ? 'font-medium text-blue-600' : ''}`}
+      className={folderItem(
+        node.isSelected,
+        node.data.isDefault,
+        "group"
+      )}
       onClick={handleSelect}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -96,7 +99,7 @@ const FolderNodeComponent = ({ node, style, dragHandle, onRefresh }: FolderNodeC
       {/* Folder Icon */}
       <Icons.Folder
         className={`h-2.5 w-2.5 mr-1.5 ${
-          node.isOpen ? 'text-orange-600' : 'text-gray-600'
+          node.isOpen ? 'text-blue-600' : 'text-gray-600'
         } ${node.data.isDefault ? 'text-blue-600' : ''}`}
       />
 

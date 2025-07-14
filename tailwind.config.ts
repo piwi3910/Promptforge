@@ -27,11 +27,48 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          50: '#FFF7ED',
-          100: '#FFEDD5',
-          500: '#FF6B0A',
-          600: '#EA580C',
-          700: '#C2410C',
+          50: '#E6F7FF',
+          100: '#BAE7FF',
+          200: '#91D5FF',
+          300: '#69C0FF',
+          400: '#40A9FF',
+          500: '#007DB8', // Dell Blue
+          600: '#0064A3',
+          700: '#004B8A',
+          800: '#003970',
+          900: '#002756',
+        },
+        // Dell Design System Colors
+        'dell-blue': {
+          50: '#E6F7FF',
+          100: '#BAE7FF',
+          200: '#91D5FF',
+          300: '#69C0FF',
+          400: '#40A9FF',
+          500: '#007DB8', // Primary Dell Blue
+          600: '#0064A3',
+          700: '#004B8A',
+          800: '#003970',
+          900: '#002756',
+        },
+        'dell-gray': {
+          50: '#F8F9FA',
+          100: '#F0F2F4',
+          200: '#E8EAED',
+          300: '#DDE1E5',
+          400: '#C4C9CE',
+          500: '#9BA1A6',
+          600: '#6B7280',
+          700: '#4B5563',
+          800: '#374151',
+          900: '#1A1E23',
+        },
+        'dell-accent': {
+          blue: '#0F8CE6',
+          teal: '#17A2B8',
+          green: '#28A745',
+          yellow: '#FFC107',
+          red: '#DC3545',
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -70,17 +107,64 @@ const config: Config = {
           800: '#1F2937',
           900: '#111827',
         },
+        // Dell Blue as primary blue
+        blue: {
+          50: '#E6F7FF',
+          100: '#BAE7FF',
+          200: '#91D5FF',
+          300: '#69C0FF',
+          400: '#40A9FF',
+          500: '#007DB8', // Dell Blue
+          600: '#0064A3',
+          700: '#004B8A',
+          800: '#003970',
+          900: '#002756',
+        },
         orange: {
-          50: '#FFF7ED',
-          100: '#FFEDD5',
-          200: '#FED7AA',
-          300: '#FDBA74',
-          400: '#FB923C',
-          500: '#FF6B0A',
-          600: '#EA580C',
-          700: '#C2410C',
-          800: '#9A3412',
-          900: '#7C2D12',
+          50: '#E6F7FF', // Dell Blue 50 (override orange with Dell blue)
+          100: '#BAE7FF', // Dell Blue 100
+          200: '#91D5FF', // Dell Blue 200
+          300: '#69C0FF', // Dell Blue 300
+          400: '#40A9FF', // Dell Blue 400
+          500: '#007DB8', // Dell Blue 500
+          600: '#0064A3', // Dell Blue 600
+          700: '#004B8A', // Dell Blue 700
+          800: '#003970', // Dell Blue 800
+          900: '#002756', // Dell Blue 900
+        },
+        // Dell Technologies Color Palette
+        dell: {
+          blue: {
+            50: '#E6F7FF',
+            100: '#BAE7FF',
+            200: '#91D5FF',
+            300: '#69C0FF',
+            400: '#40A9FF',
+            500: '#007DB8', // Primary Dell Blue
+            600: '#0064A3',
+            700: '#004B8A',
+            800: '#003970',
+            900: '#002756',
+          },
+          gray: {
+            50: '#F8F9FA',
+            100: '#F0F2F4',
+            200: '#E8EAED',
+            300: '#DDE1E5',
+            400: '#C4C9CE',
+            500: '#9BA1A6',
+            600: '#6B7280',
+            700: '#4B5563',
+            800: '#374151',
+            900: '#1A1E23',
+          },
+          accent: {
+            blue: '#0F8CE6',
+            teal: '#17A2B8',
+            green: '#28A745',
+            yellow: '#FFC107',
+            red: '#DC3545',
+          }
         },
         purple: {
           50: '#F3F0FF',
@@ -102,8 +186,15 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      // Dell Design System Extensions
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+      },
+      fontSize: {
+        '2xs': ['0.625rem', { lineHeight: '0.75rem' }],
+      },
       fontFamily: {
-        sans: ["var(--font-inter)"],
         mono: ["var(--font-jetbrains-mono)"],
       },
       keyframes: {

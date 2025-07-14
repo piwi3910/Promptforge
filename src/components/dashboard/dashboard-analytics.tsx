@@ -33,7 +33,7 @@ interface DashboardAnalyticsProps {
   data: DashboardData;
 }
 
-const COLORS = ['#f97316', '#fb923c', '#fdba74', '#fed7aa', '#ffedd5'];
+const COLORS = ['#007DB8', '#0F8CE6', '#40A9FF', '#69C0FF', '#91D5FF'];
 
 export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
   return (
@@ -43,7 +43,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Prompts</CardTitle>
-            <Icons.File className="h-4 w-4 text-orange-600" />
+            <Icons.File className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalPrompts}</div>
@@ -56,7 +56,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Folders</CardTitle>
-            <Icons.Folder className="h-4 w-4 text-orange-600" />
+            <Icons.Folder className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalFolders}</div>
@@ -69,7 +69,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Tags</CardTitle>
-            <Icons.Tag className="h-4 w-4 text-orange-600" />
+            <Icons.Tag className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalTags}</div>
@@ -82,7 +82,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Versions</CardTitle>
-            <Icons.BarChart3 className="h-4 w-4 text-orange-600" />
+            <Icons.BarChart3 className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalVersions}</div>
@@ -118,17 +118,17 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
                   tickFormatter={(value) => `${value}`}
                 />
                 <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="prompts" 
-                  stroke="#f97316" 
+                <Line
+                  type="monotone"
+                  dataKey="prompts"
+                  stroke="#007DB8"
                   strokeWidth={2}
                   name="New Prompts"
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="cumulative" 
-                  stroke="#fb923c" 
+                <Line
+                  type="monotone"
+                  dataKey="cumulative"
+                  stroke="#0F8CE6"
                   strokeWidth={2}
                   strokeDasharray="5 5"
                   name="Total Prompts"
@@ -191,7 +191,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
                   tickFormatter={(value) => `${value}`}
                 />
                 <Tooltip />
-                <Bar dataKey="count" fill="#f97316" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" fill="#007DB8" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -205,7 +205,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
             <div className="space-y-4">
               {data.topTags.map((tag) => (
                 <div key={tag.name} className="flex items-center">
-                  <div className="w-2 h-2 rounded-full bg-orange-500 mr-2" />
+                  <div className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium leading-none">{tag.name}</p>
@@ -213,7 +213,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
                     </div>
                     <div className="mt-1 h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-orange-500 transition-all duration-300"
+                        className="h-full bg-blue-500 transition-all duration-300"
                         style={{ 
                           width: `${(tag.count / Math.max(...data.topTags.map(t => t.count))) * 100}%` 
                         }}
@@ -236,7 +236,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
           <div className="space-y-4">
             {data.recentActivity.map((activity) => (
               <div key={activity.id} className="flex items-center space-x-4">
-                <div className="w-2 h-2 rounded-full bg-orange-500" />
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
                 <div className="flex-1">
                   <p className="text-sm font-medium">{activity.title}</p>
                   <p className="text-xs text-muted-foreground">

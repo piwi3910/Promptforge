@@ -1,32 +1,63 @@
-# **Prompt Management Platform Design Brief**
+# **Prompt Management Platform Design Brief - Dell Technologies Edition**
 
-## **Color Palette**
+## **Dell Technologies Color Palette**
 
-### **Primary Colors**
+### **Primary Dell Colors**
 
-* ## **Primary Dark \- \#0F0F14 (Deep charcoal for main backgrounds)**
+* ## **Dell Blue Primary \- \#007DB8 (Primary brand color for all interactive elements)**
 
-* ## **Primary Surface \- \#1A1A1F (Elevated surface color for cards and panels)**
+* ## **Dell Blue Light \- \#E6F7FF (Light backgrounds and subtle accents)**
 
-* ## **Primary Light \- \#F8F9FA (Clean white for text and highlights)**
+* ## **Dell Blue Dark \- \#004B8A (Dark variant for headers and emphasis)**
 
-### **Secondary Colors**
+### **Dell Supporting Colors**
 
-* ## **Secondary Purple \- \#8B5CF6 (Primary brand accent for key actions)**
+* ## **Dell Gray Primary \- \#6B7280 (Text and secondary elements)**
 
-* ## **Secondary Purple Light \- \#A78BFA (Hover states and secondary elements)**
+* ## **Dell Gray Light \- \#F8F9FA (Clean backgrounds)**
 
-* ## **Secondary Purple Pale \- \#EDE9FE (Subtle backgrounds and selected states)**
+* ## **Dell Gray Dark \- \#1A1E23 (Dark text and strong contrast)**
 
-### **Accent Colors**
+### **Dell Accent Colors**
 
-* ## **Accent Gradient Start \- \#8B5CF6 (Purple for gradient beginnings)**
+* ## **Dell Accent Blue \- \#0F8CE6 (Secondary interactive elements)**
 
-* ## **Accent Gradient End \- \#EC4899 (Pink for gradient endings)**
+* ## **Dell Teal \- \#17A2B8 (Success and confirmation states)**
 
-* ## **Accent Blue \- \#3B82F6 (For informational elements)**
+* ## **Dell Green \- \#28A745 (Success indicators)**
 
-* ## **Accent Teal \- \#14B8A6 (For success states and confirmations)**
+## **Dell Technologies Design System Implementation**
+
+### **Corporate Brand Integration**
+
+* ## **Complete Color Transformation**: All orange elements replaced with Dell Blue (#007DB8)
+* ## **Enterprise Appearance**: Professional, corporate-grade visual design
+* ## **Brand Consistency**: Unified Dell blue throughout navigation, charts, and interactive elements
+* ## **Standardized Components**: Centralized design system for consistent styling
+
+### **Technical Implementation**
+
+* ## **Tailwind Configuration**: Extended with Dell color palette (`dell-blue-*`, `dell-gray-*`)
+* ## **Design System Functions**: `dellCard()`, `dellButton()`, `dellNavItem()` for consistent components
+* ## **Color Standards**: `dellColors.primary.bg`, `dellColors.primary.text` for centralized color usage
+* ## **Component Builders**: Type-safe functions ensuring brand compliance
+
+### **Dell Color System in Use**
+
+* ## **Navigation**: Dell blue sidebar with professional hover states
+* ## **Charts & Analytics**: All data visualization using Dell blue spectrum
+* ## **Interactive Elements**: Buttons, cards, and forms with Dell blue accents
+* ## **Status Indicators**: Progress bars, dots, and badges in Dell blue
+
+### **Legacy Color References (Maintained for Compatibility)**
+
+* ## **Accent Gradient Start \- \#007DB8 (Dell Blue for gradient beginnings)**
+
+* ## **Accent Gradient End \- \#0F8CE6 (Dell accent blue for gradient endings)**
+
+* ## **Accent Blue \- \#007DB8 (Dell Blue for informational elements)**
+
+* ## **Accent Teal \- \#17A2B8 (Dell teal for success states and confirmations)**
 
 ### **Functional Colors**
 
