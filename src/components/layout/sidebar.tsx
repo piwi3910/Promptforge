@@ -50,7 +50,7 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="hidden border-r bg-gray-800 shadow-xl md:block overflow-hidden">
+    <div className="hidden border-r bg-gray-800 shadow-xl md:block overflow-hidden" style={{ width: 'calc(16rem + 10px)' }}>
       <div className="flex h-full max-h-screen flex-col gap-2">
         {/* Enhanced Header with gradient and glow effect */}
         <div className="flex h-14 items-center border-b border-gray-700 px-4 lg:h-[60px] lg:px-6 bg-gradient-to-r from-gray-800 to-gray-900 relative">
