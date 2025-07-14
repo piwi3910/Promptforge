@@ -113,17 +113,6 @@ export function Sidebar() {
               )
             })}
           </nav>
-          
-          {/* Professional divider with subtle animation */}
-          <div className="mx-6 my-6 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          
-          {/* Status indicator */}
-          <div className="px-6">
-            <div className="flex items-center gap-2 text-dell-blue-100 text-xs">
-              <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse shadow-sm shadow-green-400/50" />
-              <span className="opacity-75">System Online</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
