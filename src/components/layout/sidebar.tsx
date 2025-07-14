@@ -78,7 +78,7 @@ export function Sidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={dellNavItem(isActive, true)}
+                  className={`${dellNavItem(isActive, true)} !text-white`}
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className={`
@@ -88,14 +88,14 @@ export function Sidebar() {
                         : 'bg-white/10 group-hover:bg-white/15'
                       }
                     `}>
-                      <Icon className="h-4 w-4 flex-shrink-0 text-white" />
+                      <Icon className="h-4 w-4 flex-shrink-0 !text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate text-white">{item.label}</div>
+                      <div className="font-medium truncate !text-white" style={{ color: '#ffffff !important' }}>{item.label}</div>
                       <div className={`
-                        text-xs opacity-70 truncate transition-opacity duration-200 text-white
+                        text-xs opacity-70 truncate transition-opacity duration-200 !text-white
                         ${isActive ? 'opacity-90' : 'group-hover:opacity-80'}
-                      `}>
+                      `} style={{ color: '#ffffff !important' }}>
                         {item.description}
                       </div>
                     </div>
@@ -103,7 +103,7 @@ export function Sidebar() {
                   
                   {/* Active indicator with smooth animation */}
                   <ChevronRight className={`
-                    h-3 w-3 flex-shrink-0 transition-all duration-200 text-white
+                    h-3 w-3 flex-shrink-0 transition-all duration-200 !text-white
                     ${isActive
                       ? 'opacity-100 translate-x-0'
                       : 'opacity-0 -translate-x-2 group-hover:opacity-60 group-hover:translate-x-0'
