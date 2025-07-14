@@ -1,15 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { Icons } from "../ui/icons";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { getPromptsByFolder, movePrompt } from "@/app/actions/prompt.actions";
+import { getPromptsByFolder, movePrompt, togglePromptLike } from "@/app/actions/prompt.actions";
 import type { Prompt, Tag } from "@/generated/prisma";
 import Link from "next/link";
 import { useModal } from "@/hooks/use-modal-store";
-import { dellCard, dellBadge, dellButton } from "@/lib/styles";
+import { stickyNoteCard } from "@/lib/styles";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,16 +27,24 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-type PromptWithTags = Prompt & { tags: Tag[] };
+type PromptWithTags = Prompt & {
+  tags: Tag[];
+  likeCount: number;
+  isLikedByUser: boolean;
+};
 
 const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
   const { onOpen } = useModal();
-  const [isHovered, setIsHovered] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
+  const [localLikeCount, setLocalLikeCount] = useState(prompt.likeCount);
+  const [localIsLiked, setLocalIsLiked] = useState(prompt.isLikedByUser);
+  const [showAllTags, setShowAllTags] = useState(false);
+  
   const {
     attributes,
     listeners,
@@ -48,10 +54,75 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
     isDragging,
   } = useSortable({ id: prompt.id });
 
+  // Generate consistent color based on prompt ID
+  const colors: Array<'yellow' | 'blue' | 'green' | 'pink' | 'orange'> = ['yellow', 'blue', 'green', 'pink', 'orange'];
+  const colorIndex = prompt.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
+  const stickyColor = colors[colorIndex];
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+  };
+
+  // Truncate description to show a snippet
+  const getDescriptionSnippet = (description: string | null) => {
+    if (!description) return "No description available...";
+    const maxLength = 80;
+    return description.length > maxLength
+      ? description.substring(0, maxLength) + "..."
+      : description;
+  };
+
+  // Handle like toggle with optimistic updates
+  const handleLikeToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isLiking) return;
+    
+    setIsLiking(true);
+    
+    // Optimistic update
+    const newIsLiked = !localIsLiked;
+    const newLikeCount = newIsLiked ? localLikeCount + 1 : localLikeCount - 1;
+    
+    setLocalIsLiked(newIsLiked);
+    setLocalLikeCount(newLikeCount);
+    
+    try {
+      await togglePromptLike(prompt.id);
+    } catch (error) {
+      // Revert optimistic update on error
+      setLocalIsLiked(localIsLiked);
+      setLocalLikeCount(localLikeCount);
+      console.error("Failed to toggle like:", error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
+  // Handle share functionality
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: prompt.title,
+          text: prompt.description || "Check out this prompt!",
+          url: `${window.location.origin}/prompts/${prompt.id}`,
+        });
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(`${window.location.origin}/prompts/${prompt.id}`);
+        // You could add a toast notification here
+        console.log("Link copied to clipboard!");
+      }
+    } catch (error) {
+      console.error("Failed to share:", error);
+    }
   };
 
   return (
@@ -59,27 +130,57 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="mb-6"
     >
-      <Card className={dellCard('interactive') + " mb-4 group relative overflow-hidden"}>
-        <CardHeader>
-          <CardTitle className="flex justify-between items-center">
-            <Link href={`/prompts/${prompt.id}`} className="flex-grow" {...listeners}>
-              <span>{prompt.title}</span>
-            </Link>
+      <div className={stickyNoteCard(stickyColor, "group relative cursor-pointer flex flex-col h-48")}>
+        {/* Sticky note header with title, like/share buttons, and menu */}
+        <div className="flex justify-between items-start mb-3 flex-shrink-0">
+          <Link
+            href={`/prompts/${prompt.id}`}
+            className="flex-grow text-lg font-medium text-gray-800 hover:text-dell-blue-600 transition-colors line-clamp-2 mr-2"
+            {...listeners}
+          >
+            {prompt.title}
+          </Link>
+          
+          {/* Right side buttons: Like, Share, Menu */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {/* Like button */}
+            <button
+              onClick={handleLikeToggle}
+              disabled={isLiking}
+              className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
+                localIsLiked
+                  ? 'bg-dell-blue-500 text-white shadow-md'
+                  : 'bg-white/80 text-gray-600 hover:bg-white hover:shadow-md'
+              } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'}`}
+              title={`${localLikeCount} likes`}
+            >
+              <Icons.Heart className={`h-3 w-3 ${localIsLiked ? 'fill-current' : ''}`} />
+            </button>
+
+            {/* Share button */}
+            <button
+              onClick={handleShare}
+              className="w-6 h-6 rounded-full bg-white/80 text-gray-600 hover:bg-white hover:shadow-md flex items-center justify-center transition-all duration-200 hover:scale-110"
+              title="Share this prompt"
+            >
+              <Icons.Share2 className="h-3 w-3" />
+            </button>
+
+            {/* Menu button */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
+                  className="h-6 w-6 opacity-60 hover:opacity-100 transition-opacity flex-shrink-0"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log("Dropdown trigger clicked!");
                   }}
                 >
-                  <Icons.MoreVertical className="h-4 w-4" />
+                  <Icons.MoreVertical className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-white">
@@ -87,11 +188,6 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log("Rename clicked via onClick", prompt);
-                    onOpen("renamePrompt", { prompt });
-                  }}
-                  onSelect={() => {
-                    console.log("Rename clicked via onSelect", prompt);
                     onOpen("renamePrompt", { prompt });
                   }}
                 >
@@ -101,11 +197,6 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log("Move clicked via onClick", prompt);
-                    onOpen("movePrompt", { prompt });
-                  }}
-                  onSelect={() => {
-                    console.log("Move clicked via onSelect", prompt);
                     onOpen("movePrompt", { prompt });
                   }}
                 >
@@ -115,11 +206,6 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log("Delete clicked via onClick", prompt);
-                    onOpen("deletePrompt", { prompt });
-                  }}
-                  onSelect={() => {
-                    console.log("Delete clicked via onSelect", prompt);
                     onOpen("deletePrompt", { prompt });
                   }}
                   className="text-red-600"
@@ -128,27 +214,74 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-1.5">
-            {prompt.tags.slice(0, 3).map((tag) => (
-              <Badge
+          </div>
+        </div>
+
+        {/* Description snippet in the middle */}
+        <div className="flex-grow mb-3 overflow-hidden">
+          <p className="text-xs text-gray-600 leading-relaxed">
+            {getDescriptionSnippet(prompt.description)}
+          </p>
+        </div>
+
+        {/* Bottom section with tags */}
+        <div className="flex-shrink-0">
+          {/* Tags at the bottom with more space */}
+          <div className="flex flex-wrap gap-1 relative">
+            {prompt.tags.slice(0, 2).map((tag) => (
+              <span
                 key={tag.id}
-                className={dellBadge('default') + " cursor-pointer"}
+                className="inline-block px-2 py-1 text-xs bg-white/60 rounded-full text-gray-700 font-medium"
                 title={tag.description || tag.name}
               >
                 {tag.name}
-              </Badge>
+              </span>
             ))}
-            {prompt.tags.length > 3 && (
-              <Badge variant="outline" className="text-dell-gray-500 hover:bg-dell-gray-50 transition-colors duration-200">
-                +{prompt.tags.length - 3} more
-              </Badge>
+            {prompt.tags.length > 2 && (
+              <DropdownMenu open={showAllTags} onOpenChange={setShowAllTags}>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="inline-block px-2 py-1 text-xs bg-white/40 rounded-full text-gray-600 hover:bg-white/60 transition-colors cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    +{prompt.tags.length - 2}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  className="bg-white border shadow-lg z-50 max-w-xs"
+                  style={{ zIndex: 9999 }}
+                >
+                  <div className="p-2">
+                    <div className="text-xs font-medium text-gray-500 mb-2">All Tags</div>
+                    <div className="flex flex-wrap gap-1">
+                      {prompt.tags.map((tag) => (
+                        <span
+                          key={tag.id}
+                          className="inline-block px-2 py-1 text-xs bg-gray-100 rounded-full text-gray-700 font-medium"
+                          title={tag.description || tag.name}
+                        >
+                          {tag.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Like count display at bottom */}
+          {localLikeCount > 0 && (
+            <div className="mt-2 text-xs text-gray-500 font-medium">
+              {localLikeCount} {localLikeCount === 1 ? 'like' : 'likes'}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
@@ -156,9 +289,16 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
 interface PromptListProps {
   folderId?: string;
   prompts?: PromptWithTags[];
+  searchQuery?: string;
+  selectedTagIds?: string[];
 }
 
-export const PromptList = ({ folderId, prompts: initialPrompts }: PromptListProps) => {
+export const PromptList = ({
+  folderId,
+  prompts: initialPrompts,
+  searchQuery = "",
+  selectedTagIds = []
+}: PromptListProps) => {
   const [prompts, setPrompts] = useState<PromptWithTags[]>(initialPrompts || []);
   const [wasCreatePromptOpen, setWasCreatePromptOpen] = useState(false);
   const { isOpen, type } = useModal();
@@ -168,6 +308,32 @@ export const PromptList = ({ folderId, prompts: initialPrompts }: PromptListProp
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  // Filter prompts based on search query and selected tags
+  const filteredPrompts = useMemo(() => {
+    let filtered = prompts;
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter((prompt) => {
+        const titleMatch = prompt.title.toLowerCase().includes(query);
+        const descriptionMatch = prompt.description?.toLowerCase().includes(query) || false;
+        return titleMatch || descriptionMatch;
+      });
+    }
+
+    // Apply tag filter
+    if (selectedTagIds.length > 0) {
+      filtered = filtered.filter((prompt) => {
+        return selectedTagIds.some((tagId) =>
+          prompt.tags.some((tag) => tag.id === tagId)
+        );
+      });
+    }
+
+    return filtered;
+  }, [prompts, searchQuery, selectedTagIds]);
 
   const fetchPrompts = useCallback(async () => {
     if (folderId !== undefined) {
@@ -219,16 +385,37 @@ export const PromptList = ({ folderId, prompts: initialPrompts }: PromptListProp
     }
   };
 
+  // Show message when no prompts match the filters
+  if (filteredPrompts.length === 0 && prompts.length > 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <Icons.Search className="h-12 w-12 text-gray-400 mb-4" />
+        <h3 className="text-lg font-medium text-gray-900 mb-2">No prompts found</h3>
+        <p className="text-gray-500 max-w-md">
+          {searchQuery && selectedTagIds.length > 0
+            ? `No prompts match your search "${searchQuery}" and selected tags.`
+            : searchQuery
+            ? `No prompts match your search "${searchQuery}".`
+            : selectedTagIds.length > 0
+            ? "No prompts match your selected tags."
+            : "No prompts found."}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={prompts} strategy={verticalListSortingStrategy}>
-        {prompts.map((prompt) => (
-          <PromptItem key={prompt.id} prompt={prompt} />
-        ))}
+      <SortableContext items={filteredPrompts} strategy={rectSortingStrategy}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 p-4">
+          {filteredPrompts.map((prompt) => (
+            <PromptItem key={prompt.id} prompt={prompt} />
+          ))}
+        </div>
       </SortableContext>
     </DndContext>
   );

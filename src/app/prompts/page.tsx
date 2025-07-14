@@ -2,10 +2,9 @@
 
 import { FolderSidebar } from "@/components/folders/folder-sidebar";
 import { PromptList } from "@/components/prompts/prompt-list";
+import { PromptFilters } from "@/components/prompts/prompt-filters";
 import { ResizablePanels } from "@/components/ui/resizable-panels";
 import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/ui/icons";
 import { useRouter } from "next/navigation";
 
 interface SelectedFolder {
@@ -18,6 +17,8 @@ export default function Prompts() {
     id: null,
     name: "Default"
   });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const router = useRouter();
 
   // Load selected folder from localStorage on mount
@@ -49,19 +50,28 @@ export default function Prompts() {
       leftPanel={<FolderSidebar onSelectFolder={handleFolderSelect} selectedFolder={selectedFolder} />}
       rightPanel={
         <div className="pb-4 px-4">
-          <div className="flex justify-between items-center mb-4 -mt-2">
+          <div className="flex justify-between items-center mb-4 pt-4">
             <span className="font-medium">
               Selected folder: <span className="text-blue-500">{selectedFolder.name}</span>
             </span>
-            <Button
-              onClick={() => router.push(`/prompts/new?folderId=${selectedFolder.id || ''}`)}
-              className="flex items-center gap-2"
-            >
-              <Icons.Plus className="h-4 w-4" />
-              New Prompt
-            </Button>
           </div>
-          <PromptList folderId={selectedFolder.id || undefined} />
+          
+          {/* Filter Component with integrated New Prompt button */}
+          <div className="mb-6">
+            <PromptFilters
+              onSearchChange={setSearchQuery}
+              onTagsChange={setSelectedTagIds}
+              searchValue={searchQuery}
+              selectedTagIds={selectedTagIds}
+              onNewPrompt={() => router.push(`/prompts/new?folderId=${selectedFolder.id || ''}`)}
+            />
+          </div>
+          
+          <PromptList
+            folderId={selectedFolder.id || undefined}
+            searchQuery={searchQuery}
+            selectedTagIds={selectedTagIds}
+          />
         </div>
       }
       defaultLeftWidth={210}

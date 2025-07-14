@@ -6,7 +6,7 @@ import { Icons } from "../ui/icons";
 import { Button } from "../ui/button";
 import { getFolders } from "@/app/actions/folder.actions";
 import { useModal } from "@/hooks/use-modal-store";
-import { folderItem } from "@/lib/styles";
+import { dellFolderItem } from "@/lib/styles";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -66,7 +66,7 @@ const FolderNodeComponent = ({ node, style, dragHandle, onRefresh }: FolderNodeC
   return (
     <div
       style={style}
-      className={folderItem(
+      className={dellFolderItem(
         node.isSelected,
         node.data.isDefault,
         "group"
@@ -99,8 +99,12 @@ const FolderNodeComponent = ({ node, style, dragHandle, onRefresh }: FolderNodeC
       {/* Folder Icon */}
       <Icons.Folder
         className={`h-2.5 w-2.5 mr-1.5 ${
-          node.isOpen ? 'text-blue-600' : 'text-gray-600'
-        } ${node.data.isDefault ? 'text-blue-600' : ''}`}
+          node.isSelected
+            ? 'text-dell-blue-600'
+            : node.isOpen
+              ? 'text-dell-blue-500'
+              : 'text-gray-500'
+        } ${node.data.isDefault && !node.isSelected ? 'text-dell-blue-600' : ''} transition-colors duration-200`}
       />
 
       {/* Folder Name */}

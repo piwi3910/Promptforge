@@ -15,6 +15,10 @@ import {
   Check,
   Tag,
   BarChart3,
+  Heart,
+  Share2,
+  Filter,
+  FilterX,
 } from 'lucide-react';
 
 export const Icons = {
@@ -34,4 +38,8 @@ export const Icons = {
   Check,
   Tag,
   BarChart3,
+  Heart,
+  Share2,
+  Filter,
+  FilterX,
 };

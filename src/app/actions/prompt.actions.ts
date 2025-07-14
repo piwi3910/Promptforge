@@ -14,13 +14,35 @@ export async function getPromptsByFolder(folderId?: string) {
     },
     include: {
       tags: true,
+      likes: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
     },
     orderBy: {
       order: "asc",
     },
   });
 
-  return prompts;
+  // Add computed fields for easier frontend consumption
+  const promptsWithLikeData = prompts.map(prompt => ({
+    ...prompt,
+    likeCount: prompt._count.likes,
+    isLikedByUser: prompt.likes.some((like: { userId: string }) => like.userId === user.id),
+  }));
+
+  return promptsWithLikeData;
 }
 
 export async function getAllPrompts() {
@@ -32,13 +54,35 @@ export async function getAllPrompts() {
     },
     include: {
       tags: true,
+      likes: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
     },
     orderBy: {
       updatedAt: "desc",
     },
   });
 
-  return prompts;
+  // Add computed fields for easier frontend consumption
+  const promptsWithLikeData = prompts.map(prompt => ({
+    ...prompt,
+    likeCount: prompt._count.likes,
+    isLikedByUser: prompt.likes.some((like: { userId: string }) => like.userId === user.id),
+  }));
+
+  return promptsWithLikeData;
 }
 
 export async function renamePrompt(id: string, title: string) {
@@ -346,4 +390,130 @@ export async function searchPrompts(query: string) {
   });
 
   return prompts;
+}
+
+// Like/Unlike functionality
+export async function likePrompt(promptId: string) {
+  const user = await requireAuth();
+
+  try {
+    // Check if the user has already liked this prompt
+    const existingLike = await db.promptLike.findUnique({
+      where: {
+        promptId_userId: {
+          promptId,
+          userId: user.id,
+        },
+      },
+    });
+
+    if (existingLike) {
+      throw new Error("You have already liked this prompt");
+    }
+
+    // Create the like
+    const like = await db.promptLike.create({
+      data: {
+        promptId,
+        userId: user.id,
+      },
+    });
+
+    revalidatePath("/prompts");
+    return like;
+  } catch (error) {
+    console.error("Error liking prompt:", error);
+    throw error;
+  }
+}
+
+export async function unlikePrompt(promptId: string) {
+  const user = await requireAuth();
+
+  try {
+    // Find and delete the like
+    const deletedLike = await db.promptLike.delete({
+      where: {
+        promptId_userId: {
+          promptId,
+          userId: user.id,
+        },
+      },
+    });
+
+    revalidatePath("/prompts");
+    return deletedLike;
+  } catch (error) {
+    console.error("Error unliking prompt:", error);
+    throw error;
+  }
+}
+
+export async function togglePromptLike(promptId: string) {
+  const user = await requireAuth();
+
+  try {
+    // Check if the user has already liked this prompt
+    const existingLike = await db.promptLike.findUnique({
+      where: {
+        promptId_userId: {
+          promptId,
+          userId: user.id,
+        },
+      },
+    });
+
+    if (existingLike) {
+      // Unlike the prompt
+      await db.promptLike.delete({
+        where: {
+          promptId_userId: {
+            promptId,
+            userId: user.id,
+          },
+        },
+      });
+      revalidatePath("/prompts");
+      return { liked: false };
+    } else {
+      // Like the prompt
+      await db.promptLike.create({
+        data: {
+          promptId,
+          userId: user.id,
+        },
+      });
+      revalidatePath("/prompts");
+      return { liked: true };
+    }
+  } catch (error) {
+    console.error("Error toggling prompt like:", error);
+    throw error;
+  }
+}
+
+export async function getPromptLikes(promptId: string) {
+  try {
+    const likes = await db.promptLike.findMany({
+      where: {
+        promptId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return likes;
+  } catch (error) {
+    console.error("Error fetching prompt likes:", error);
+    throw error;
+  }
 }

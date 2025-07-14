@@ -164,17 +164,48 @@ export function dellInput(state: 'default' | 'error' | 'success' = 'default', cl
 }
 
 /**
- * Enhanced folder item with professional hover effects
+ * Enhanced folder item with subtle color changes
  */
 export function dellFolderItem(isSelected: boolean, isDefault?: boolean, className?: ClassValue) {
   return cn(
-    "flex items-center py-2 px-3 rounded-md cursor-pointer group relative",
-    // Base text color for good contrast
+    "flex items-center py-2 px-3 cursor-pointer transition-colors duration-200",
+    // Base text color
     "text-gray-700",
     isSelected
-      ? "bg-dell-blue-100 border-l-4 border-dell-blue-500 shadow-sm scale-[1.01] text-dell-blue-800"
-      : "hover:bg-dell-blue-50 hover:shadow-sm hover:scale-[1.02] hover:text-dell-blue-700 transition-all duration-200",
-    isDefault && "font-medium text-dell-blue-600",
+      ? "text-dell-blue-600 font-semibold"
+      : "hover:text-dell-blue-500",
+    isDefault && !isSelected && "text-dell-blue-600 font-medium",
+    className
+  )
+}
+
+/**
+ * Sticky note style for prompt cards
+ */
+export function stickyNoteCard(color: 'yellow' | 'blue' | 'green' | 'pink' | 'orange' = 'yellow', className?: ClassValue) {
+  const colorClasses = {
+    yellow: "bg-yellow-100 border-yellow-200 shadow-yellow-200/50",
+    blue: "bg-blue-100 border-blue-200 shadow-blue-200/50",
+    green: "bg-green-100 border-green-200 shadow-green-200/50",
+    pink: "bg-pink-100 border-pink-200 shadow-pink-200/50",
+    orange: "bg-orange-100 border-orange-200 shadow-orange-200/50"
+  }
+  
+  return cn(
+    // Base sticky note styling - compact post-it size
+    "relative transform transition-all duration-200 ease-in-out",
+    "border-2 rounded-sm p-3",
+    "w-48 h-48", // Fixed post-it note dimensions
+    "shadow-lg hover:shadow-xl",
+    // Slight rotation for authentic look
+    "rotate-1 hover:rotate-0",
+    // Hover effects
+    "hover:scale-105 hover:z-10",
+    // Color scheme
+    colorClasses[color],
+    // Tape effect at top
+    "before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2",
+    "before:w-6 before:h-3 before:bg-gray-200/80 before:rounded-sm before:shadow-sm",
     className
   )
 }
