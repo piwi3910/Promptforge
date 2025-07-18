@@ -2,10 +2,14 @@ import { DashboardAnalytics } from "@/components/dashboard/dashboard-analytics";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 
+// Keep force-dynamic to prevent Turbopack font loading issues
 export const dynamic = 'force-dynamic';
 
-async function getDashboardData(userId: string) {
+// Cache the dashboard data function with React cache for request-level memoization
+const getDashboardData = cache(async (userId: string) => {
   const [
     totalPrompts,
     totalFolders,
@@ -170,14 +174,26 @@ async function getDashboardData(userId: string) {
     recentActivity,
     promptGrowth
   };
-}
+});
+
+// Create a cached version using unstable_cache for longer-term caching
+const getCachedDashboardData = unstable_cache(
+  async (userId: string) => {
+    return await getDashboardData(userId);
+  },
+  ['dashboard-data'],
+  {
+    revalidate: 300, // 5 minutes
+    tags: ['dashboard', 'user-data']
+  }
+);
 
 export default async function Dashboard() {
   try {
     const user = await requireAuth();
-    const dashboardData = await getDashboardData(user.id);
+    const dashboardData = await getCachedDashboardData(user.id);
 
-  return (
+    return (
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>

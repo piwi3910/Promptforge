@@ -1,36 +1,299 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Promptforge - AI Prompt Management Platform
+
+A comprehensive Next.js application for managing, sharing, and organizing AI prompts with advanced caching capabilities.
+
+## Features
+
+### Core Functionality
+- **Prompt Management**: Create, edit, organize, and share AI prompts
+- **Tag System**: Categorize prompts with a flexible tagging system
+- **User Authentication**: Secure user registration and login with NextAuth
+- **Dashboard Analytics**: Real-time insights into prompt usage and performance
+- **Shared Prompts Marketplace**: Discover and share prompts with the community
+- **Search & Filtering**: Advanced search capabilities across prompts and tags
+
+### Performance & Caching
+- **Redis Caching**: Comprehensive caching strategy for optimal performance
+- **Session Management**: Cached user sessions and preferences
+- **Analytics Caching**: Real-time dashboard data with intelligent cache invalidation
+- **Rate Limiting**: Redis-based API rate limiting for security
+
+## Tech Stack
+
+- **Frontend**: Next.js 15, React, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: PostgreSQL
+- **Caching**: Redis 7 with ioredis client
+- **Authentication**: NextAuth.js
+- **Deployment**: Docker Compose for development
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+ 
+- Docker and Docker Compose
+- Git
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd Promptforge
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Update the environment variables in `.env.local`:
+   ```env
+   # Database
+   DATABASE_URL="postgresql://user:password@localhost:5432/prompt-manager"
+   
+   # NextAuth
+   NEXTAUTH_SECRET="your-secret-key"
+   NEXTAUTH_URL="http://localhost:3000"
+   
+   # Redis
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
+   REDIS_PASSWORD=redispassword
+   ```
+
+4. **Start the services**
+   ```bash
+   # Start PostgreSQL and Redis
+   docker-compose up -d
+   
+   # Run database migrations
+   npx prisma migrate dev
+   
+   # Generate Prisma client
+   npx prisma generate
+   ```
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open the application**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+
+### Cached Operations
+- Tag management and search
+- Dashboard analytics and statistics
+- Shared prompts with filtering and pagination
+- User sessions and preferences
+- Popular content and trending data
+
+### Cache Configuration
+```typescript
+// TTL (Time To Live) settings
+const cacheTTL = {
+  prompt: 5 * 60,        // 5 minutes
+  tags: 10 * 60,         // 10 minutes
+  dashboardAnalytics: 5 * 60,  // 5 minutes
+  sharedPrompts: 10 * 60,      // 10 minutes
+  session: 24 * 60 * 60,       // 24 hours
+};
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+├── app/
+│   ├── actions/           # Server actions
+│   │   ├── tag.actions.cached.ts      # Cached tag operations
+│   │   ├── analytics.actions.cached.ts # Cached analytics
+│   │   └── shared-prompts.actions.cached.ts # Cached shared prompts
+│   ├── api/               # API routes
+│   ├── dashboard/         # Dashboard pages
+│   ├── prompts/          # Prompt management pages
+│   └── shared-prompts/   # Shared prompts marketplace
+├── lib/
+│   ├── redis.ts          # Redis configuration and cache service
+│   ├── session-cache.ts  # Session caching utilities
+│   ├── cache-invalidation.ts # Cache invalidation strategies
+│   └── prisma.ts         # Database configuration
+└── components/           # Reusable UI components
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Available Scripts
 
-## Learn More
+```bash
+# Development
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
 
-To learn more about Next.js, take a look at the following resources:
+# Database
+npx prisma migrate dev    # Run database migrations
+npx prisma generate      # Generate Prisma client
+npx prisma studio       # Open Prisma Studio
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Docker
+docker-compose up -d     # Start services (PostgreSQL + Redis)
+docker-compose down      # Stop services
+docker-compose logs      # View service logs
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## API Endpoints
 
-## Deploy on Vercel
+### Authentication
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/[...nextauth]` - NextAuth endpoints
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Prompts
+- `GET /api/prompts` - List user prompts
+- `POST /api/prompts` - Create new prompt
+- `PUT /api/prompts/[id]` - Update prompt
+- `DELETE /api/prompts/[id]` - Delete prompt
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Tags
+- `GET /api/tags` - List all tags (cached)
+- `POST /api/tags` - Create new tag
+- `PUT /api/tags/[id]` - Update tag
+
+### Analytics
+- `GET /api/analytics/dashboard` - Dashboard analytics (cached)
+- `GET /api/analytics/global` - Global statistics (cached)
+
+## Database Schema
+
+### Core Tables
+- **User**: User accounts and profiles
+- **Prompt**: AI prompts with content and metadata
+- **Tag**: Categorization tags
+- **PromptToTag**: Many-to-many relationship
+- **SharedPrompt**: Public prompt sharing
+
+### Relationships
+- Users can have multiple prompts
+- Prompts can have multiple tags
+- Prompts can be shared publicly
+- Analytics track user interactions
+
+## Caching Strategy
+
+### Cache Keys Structure
+```
+cache:{domain}:{identifier}:{optional_params}
+
+Examples:
+- cache:prompt:123
+- cache:tags:all
+- cache:analytics:dashboard:user456
+- cache:shared-prompts:popular
+- cache:session:sess_abc123
+```
+
+### Invalidation Triggers
+- **Prompt Operations**: Clear prompt, tags, and analytics caches
+- **Tag Operations**: Clear tag-related caches
+- **User Actions**: Clear user-specific caches
+- **Sharing Actions**: Clear shared prompts caches
+
+## Performance Optimizations
+
+### Redis Optimizations
+- Connection pooling and lazy connections
+- Pipeline operations for batch requests
+- Automatic retry with exponential backoff
+- Health monitoring and error handling
+
+### Application Optimizations
+- Server-side rendering with Next.js
+- Optimized database queries with Prisma
+- Efficient cache-aside patterns
+- Strategic cache warming
+
+## Monitoring & Maintenance
+
+### Health Checks
+```typescript
+// Redis health check
+await CacheService.getInstance().healthCheck();
+
+// Database health check
+await prisma.$queryRaw`SELECT 1`;
+```
+
+### Cache Statistics
+- Monitor hit/miss ratios
+- Track memory usage
+- Performance metrics
+- Error rates
+
+## Development Workflow
+
+### Branch Strategy
+- `main` - Production-ready code
+- `redis` - Redis caching implementation
+- `feature/*` - Feature development branches
+
+### Testing
+```bash
+# Run tests
+npm test
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+```
+
+## Deployment
+
+### Docker Production
+```bash
+# Build production image
+docker build -t promptforge .
+
+# Run with docker-compose
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Environment Variables (Production)
+```env
+NODE_ENV=production
+DATABASE_URL="postgresql://..."
+REDIS_URL="redis://..."
+NEXTAUTH_SECRET="secure-secret"
+NEXTAUTH_URL="https://your-domain.com"
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support and questions:
+- Create an issue in the GitHub repository
+- Review the API documentation
+
+## Acknowledgments
+
+- Next.js team for the excellent framework
+- Prisma for the powerful ORM
+- Redis for high-performance caching
+- The open-source community for inspiration and tools

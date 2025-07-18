@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, memo } from "react";
 import { Tree, NodeApi, NodeRendererProps, TreeApi } from "react-arborist";
 import { Icons } from "../ui/icons";
 import { Button } from "../ui/button";
-import { getFolders } from "@/app/actions/folder.actions";
+import { getFolders } from "@/app/actions/folder.actions.cached";
 import { useModal } from "@/hooks/use-modal-store";
 import { dellFolderItem } from "@/lib/styles";
 import {
@@ -36,7 +36,7 @@ interface FolderNodeComponentProps extends NodeRendererProps<FolderNode> {
   onRefresh: () => void;
 }
 
-const FolderNodeComponent = ({ node, style, dragHandle, onRefresh }: FolderNodeComponentProps) => {
+const FolderNodeComponent = memo(({ node, style, dragHandle, onRefresh }: FolderNodeComponentProps) => {
   const { onOpen } = useModal();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -192,7 +192,9 @@ const FolderNodeComponent = ({ node, style, dragHandle, onRefresh }: FolderNodeC
       )}
     </div>
   );
-};
+});
+
+FolderNodeComponent.displayName = 'FolderNodeComponent';
 
 export const FolderSidebar = ({ onSelectFolder, selectedFolder }: FolderSidebarProps) => {
   const [data, setData] = useState<FolderNode[]>([]);

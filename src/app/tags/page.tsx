@@ -1,9 +1,11 @@
 import { Suspense } from "react";
+import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import { TagsManagement } from "@/components/tags/tags-management";
 import { Card, CardContent } from "@/components/ui/card";
 
-async function getTagsData() {
+// Internal function for getting tags data (not cached)
+async function getTagsDataInternal() {
   const tags = await db.tag.findMany({
     select: {
       id: true,
@@ -23,6 +25,18 @@ async function getTagsData() {
 
   return tags;
 }
+
+// Cached version of getTagsData
+const getTagsData = unstable_cache(
+  async () => {
+    return getTagsDataInternal();
+  },
+  ['tags-page-data'],
+  {
+    tags: ['tags', 'tags-page'],
+    revalidate: 300, // 5 minutes
+  }
+);
 
 export default async function TagsPage() {
   const tags = await getTagsData();

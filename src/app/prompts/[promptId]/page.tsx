@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getPromptById, updatePrompt, createPrompt } from "@/app/actions/prompt.actions";
+import { getPromptById } from "@/app/actions/prompt.actions.cached";
+import { updatePrompt, createPrompt } from "@/app/actions/prompt.actions";
 import { Editor } from "@/components/editor/editor";
 import type { Prompt, Tag, PromptVersion } from "@/generated/prisma";
 import { useDebounce } from "@/hooks/use-debounce";
