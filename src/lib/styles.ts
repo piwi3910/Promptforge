@@ -195,7 +195,7 @@ export function stickyNoteCard(color: 'yellow' | 'blue' | 'green' | 'pink' | 'or
     // Base sticky note styling - compact post-it size
     "relative transform transition-all duration-200 ease-in-out",
     "border-2 rounded-sm p-3",
-    "w-48 h-48", // Fixed post-it note dimensions
+    "w-96 h-96", // Fixed post-it note dimensions - doubled size
     "shadow-lg hover:shadow-xl",
     // Slight rotation for authentic look
     "rotate-1 hover:rotate-0",

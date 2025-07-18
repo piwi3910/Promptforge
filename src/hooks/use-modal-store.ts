@@ -37,6 +37,7 @@ interface ModalData {
   parentId?: string;
   folderId?: string;
   onSuccess?: (result?: TagData | void) => void;
+  onConfirm?: () => void;
 }
 
 interface ModalStore {

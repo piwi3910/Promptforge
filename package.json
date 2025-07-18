@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed-marketplace": "tsx prisma/seed-marketplace.ts",
+    "scrape:prompts": "tsx scripts/scrape-prompts.ts",
     "db:verify": "tsx scripts/verify-tags.ts"
   },
   "dependencies": {
@@ -47,6 +49,7 @@
     "lucide-react": "^0.525.0",
     "next": "15.3.5",
     "next-auth": "^4.24.11",
+    "playwright-mcp": "^0.0.12",
     "prisma": "^6.11.1",
     "react": "^19.0.0",
     "react-arborist": "^3.4.3",
@@ -62,9 +65,11 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/cheerio": "^0.22.35",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cheerio": "^1.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "tailwindcss": "^4",

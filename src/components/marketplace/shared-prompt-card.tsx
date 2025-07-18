@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ui/avatar';
 import { 
@@ -124,7 +123,7 @@ export function SharedPromptCard({
 
   const getDescriptionSnippet = (description: string | null | undefined) => {
     if (!description) return "Click to view this prompt...";
-    const maxLength = 60;
+    const maxLength = 300;
     return description.length > maxLength
       ? description.substring(0, maxLength) + "..."
       : description;
@@ -139,20 +138,88 @@ export function SharedPromptCard({
   };
 
   return (
-    <Link href={`/shared-prompts/${sharedPrompt.id}`}>
-      <div className={stickyNoteCard(stickyColor, "group cursor-pointer")}>
-        {/* Header with author info */}
-        {showAuthor && (
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2 min-w-0">
-              <Avatar 
+    <div className="mb-6">
+      <div className={stickyNoteCard(stickyColor, "group relative cursor-pointer flex flex-col")}>
+        {/* Sticky note header with title, like/share buttons, and menu */}
+        <div className="flex justify-between items-start mb-3 flex-shrink-0">
+          <Link
+            href={`/shared-prompts/${sharedPrompt.id}`}
+            className="flex-grow text-xl font-semibold text-gray-800 hover:text-dell-blue-600 transition-colors line-clamp-4 mr-2"
+          >
+            {sharedPrompt.title}
+          </Link>
+          
+          {/* Right side buttons: Like, Share, Menu */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {/* Like button */}
+            <button
+              onClick={handleLike}
+              disabled={isLiking}
+              className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
+                isLiked
+                  ? 'bg-dell-blue-500 text-white shadow-md'
+                  : 'bg-white/80 text-gray-600 hover:bg-white hover:shadow-md'
+              } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'}`}
+              title={`${likeCount} likes`}
+            >
+              <Heart className={`h-3 w-3 ${isLiked ? 'fill-current' : ''}`} />
+            </button>
+
+            {/* Copy button */}
+            <button
+              onClick={handleCopy}
+              disabled={isCopying}
+              className="w-6 h-6 rounded-full bg-white/80 text-gray-600 hover:bg-white hover:shadow-md flex items-center justify-center transition-all duration-200 hover:scale-110"
+              title="Copy to My Library"
+            >
+              <Copy className="h-3 w-3" />
+            </button>
+
+            {/* Menu button */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 opacity-60 hover:opacity-100 transition-opacity flex-shrink-0"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
+                  <MoreHorizontal className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white z-50">
+                <DropdownMenuItem onClick={handleCopy} disabled={isCopying}>
+                  <Copy className="w-4 h-4 mr-2" />
+                  {isCopying ? 'Copying...' : 'Copy to My Library'}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+
+        {/* Description snippet in the middle */}
+        <div className="flex-grow mb-3 overflow-hidden">
+          <p className="text-sm text-gray-600 leading-relaxed line-clamp-8">
+            {getDescriptionSnippet(sharedPrompt.description)}
+          </p>
+        </div>
+
+        {/* Bottom section with tags and author info */}
+        <div className="flex-shrink-0">
+          {/* Author info */}
+          {showAuthor && (
+            <div className="flex items-center gap-2 mb-2">
+              <Avatar
                 user={{
                   id: sharedPrompt.author.id,
                   username: sharedPrompt.author.username,
                   name: sharedPrompt.author.name,
                   avatarType: sharedPrompt.author.avatarType,
                   profilePicture: sharedPrompt.author.profilePicture
-                }} 
+                }}
                 size="sm"
               />
               <div className="min-w-0 flex-1">
@@ -167,68 +234,28 @@ export function SharedPromptCard({
                 )}
               </div>
             </div>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <MoreHorizontal className="h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleCopy} disabled={isCopying}>
-                  <Copy className="w-4 h-4 mr-2" />
-                  {isCopying ? 'Copying...' : 'Copy to My Library'}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
+          )}
 
-        {/* Title */}
-        <div className="mb-2">
-          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-dell-blue-600 transition-colors">
-            {sharedPrompt.title}
-          </h3>
-        </div>
-
-        {/* Description */}
-        <div className="mb-3">
-          <p className="text-xs text-gray-600 line-clamp-3">
-            {getDescriptionSnippet(sharedPrompt.description)}
-          </p>
-        </div>
-
-        {/* Tags */}
-        {sharedPrompt.prompt.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
+          {/* Tags at the bottom with more space */}
+          <div className="flex flex-wrap gap-1 relative">
             {sharedPrompt.prompt.tags.slice(0, 2).map((tag) => (
-              <Badge 
-                key={tag.id} 
-                variant="secondary" 
-                className="text-xs px-1.5 py-0.5 bg-white/50 text-gray-600 hover:bg-white/70"
+              <span
+                key={tag.id}
+                className="inline-block px-2 py-1 text-xs bg-white/60 rounded-full text-gray-700 font-medium"
+                title={tag.name}
               >
                 {tag.name}
-              </Badge>
+              </span>
             ))}
             {sharedPrompt.prompt.tags.length > 2 && (
-              <Badge 
-                variant="secondary" 
-                className="text-xs px-1.5 py-0.5 bg-white/50 text-gray-600"
-              >
+              <span className="inline-block px-2 py-1 text-xs bg-white/40 rounded-full text-gray-600">
                 +{sharedPrompt.prompt.tags.length - 2}
-              </Badge>
+              </span>
             )}
           </div>
-        )}
 
-        {/* Stats Footer */}
-        <div className="absolute bottom-3 left-3 right-3">
-          <div className="flex items-center justify-between">
+          {/* Stats display at bottom */}
+          <div className="mt-2 flex items-center justify-between">
             <div className="flex items-center gap-3 text-xs text-gray-500">
               <div className="flex items-center gap-1">
                 <Eye className="w-3 h-3" />
@@ -239,28 +266,15 @@ export function SharedPromptCard({
                 {sharedPrompt.commentCount}
               </div>
             </div>
-
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLike}
-                disabled={isLiking}
-                className={`h-6 w-6 p-0 transition-all ${
-                  isLiked 
-                    ? 'text-red-500 hover:text-red-600' 
-                    : 'text-gray-400 hover:text-red-500'
-                }`}
-              >
-                <Heart className={`w-3 h-3 ${isLiked ? 'fill-current' : ''}`} />
-              </Button>
-              <span className="text-xs text-gray-500 min-w-[1rem] text-center">
-                {likeCount}
-              </span>
-            </div>
+            {/* Like count display */}
+            {likeCount > 0 && (
+              <div className="text-xs text-gray-500 font-medium">
+                {likeCount} {likeCount === 1 ? 'like' : 'likes'}
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

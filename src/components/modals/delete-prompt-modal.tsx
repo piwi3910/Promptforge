@@ -18,18 +18,28 @@ export const DeletePromptModal = () => {
   const [loading, setLoading] = useState(false);
 
   const isModalOpen = isOpen && type === "deletePrompt";
-  const { prompt } = data;
+  const { prompt, onConfirm } = data;
 
   const handleDelete = async () => {
     if (!prompt) return;
     
     try {
       setLoading(true);
-      await deletePrompt(prompt.id);
+      
+      // Call the optimistic update callback immediately
+      if (onConfirm) {
+        onConfirm();
+      }
+      
+      // Close the modal
       onClose();
-      window.location.reload(); // Refresh to show changes
+      
+      // Delete the prompt in the background
+      await deletePrompt(prompt.id);
     } catch (error) {
       console.error("Failed to delete prompt:", error);
+      // Note: In a production app, you might want to revert the optimistic update here
+      // and show an error message to the user
     } finally {
       setLoading(false);
     }

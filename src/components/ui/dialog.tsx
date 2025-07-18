@@ -40,16 +40,6 @@ export function Dialog({ open = false, onOpenChange, children }: DialogProps) {
   return (
     <DialogContext.Provider value={contextValue}>
       {children}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => handleOpenChange(false)}
-          />
-          {/* Content will be rendered here by DialogContent */}
-        </div>
-      )}
     </DialogContext.Provider>
   );
 }
@@ -95,14 +85,14 @@ export function DialogContent({ className, children }: DialogContentProps) {
   if (!context.open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div 
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={() => context.onOpenChange(false)}
       />
       <div
         className={cn(
-          "relative bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-full max-w-lg max-h-[90vh] overflow-y-auto",
+          "relative z-[61] bg-white rounded-lg shadow-lg border border-gray-200 w-full max-w-lg max-h-[90vh] overflow-y-auto",
           className
         )}
         onClick={(e) => e.stopPropagation()}
@@ -153,7 +143,7 @@ export interface DialogTitleProps {
 
 export function DialogTitle({ className, children }: DialogTitleProps) {
   return (
-    <h2 className={cn("text-lg font-semibold leading-none tracking-tight", className)}>
+    <h2 className={cn("text-lg font-semibold leading-none tracking-tight text-gray-900", className)}>
       {children}
     </h2>
   );
@@ -166,7 +156,7 @@ export interface DialogDescriptionProps {
 
 export function DialogDescription({ className, children }: DialogDescriptionProps) {
   return (
-    <p className={cn("text-sm text-muted-foreground", className)}>
+    <p className={cn("text-sm text-gray-600", className)}>
       {children}
     </p>
   );

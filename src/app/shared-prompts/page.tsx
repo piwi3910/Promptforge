@@ -257,7 +257,7 @@ export default function SharedPromptsPage() {
         </div>
 
         {/* Prompts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-12">
           {prompts.map((prompt) => (
             <SharedPromptCard
               key={prompt.id}

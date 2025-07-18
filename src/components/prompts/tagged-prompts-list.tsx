@@ -52,7 +52,7 @@ const TaggedPromptItem = ({ prompt }: { prompt: TaggedPrompt }) => {
   // Truncate description to show a snippet
   const getDescriptionSnippet = (description: string | null) => {
     if (!description) return "No description available...";
-    const maxLength = 80;
+    const maxLength = 300;
     return description.length > maxLength
       ? description.substring(0, maxLength) + "..."
       : description;
@@ -112,12 +112,12 @@ const TaggedPromptItem = ({ prompt }: { prompt: TaggedPrompt }) => {
 
   return (
     <div className="mb-6">
-      <div className={stickyNoteCard(stickyColor, "group relative cursor-pointer flex flex-col h-48")}>
+      <div className={stickyNoteCard(stickyColor, "group relative cursor-pointer flex flex-col p-6")}>
         {/* Sticky note header with title, like/share buttons, and menu */}
-        <div className="flex justify-between items-start mb-3 flex-shrink-0">
+        <div className="flex justify-between items-start mb-4 flex-shrink-0">
           <Link
             href={`/prompts/${prompt.id}`}
-            className="flex-grow text-lg font-medium text-gray-800 hover:text-dell-blue-600 transition-colors line-clamp-2 mr-2"
+            className="flex-grow text-xl font-semibold text-gray-800 hover:text-dell-blue-600 transition-colors line-clamp-4 mr-2"
           >
             {prompt.title}
           </Link>
@@ -221,8 +221,8 @@ const TaggedPromptItem = ({ prompt }: { prompt: TaggedPrompt }) => {
         </div>
 
         {/* Description snippet in the middle */}
-        <div className="flex-grow mb-3 overflow-hidden">
-          <p className="text-xs text-gray-600 leading-relaxed">
+        <div className="flex-grow mb-4 overflow-hidden">
+          <p className="text-sm text-gray-600 leading-relaxed line-clamp-8">
             {getDescriptionSnippet(prompt.description)}
           </p>
         </div>
@@ -335,10 +335,10 @@ export const TaggedPromptsList = ({ selectedTagId, selectedTagName }: TaggedProm
   if (loading) {
     return (
       <div className="pb-4 px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-12">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="bg-yellow-100 rounded-lg p-4 w-48 h-48 shadow-md">
+              <div className="bg-yellow-100 rounded-lg p-4 w-96 h-96 shadow-md">
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                 <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
                 <div className="h-3 bg-gray-200 rounded w-2/3"></div>
@@ -392,7 +392,7 @@ export const TaggedPromptsList = ({ selectedTagId, selectedTagName }: TaggedProm
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-12">
           {filteredPrompts.map((prompt) => (
             <TaggedPromptItem key={prompt.id} prompt={prompt} />
           ))}

@@ -38,7 +38,7 @@ type PromptWithTags = Prompt & {
   isLikedByUser: boolean;
 };
 
-const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
+const PromptItem = ({ prompt, onConfirm }: { prompt: PromptWithTags, onConfirm: () => void }) => {
   const { onOpen } = useModal();
   const [isLiking, setIsLiking] = useState(false);
   const [localLikeCount, setLocalLikeCount] = useState(prompt.likeCount);
@@ -68,7 +68,7 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
   // Truncate description to show a snippet
   const getDescriptionSnippet = (description: string | null) => {
     if (!description) return "No description available...";
-    const maxLength = 80;
+    const maxLength = 300;
     return description.length > maxLength
       ? description.substring(0, maxLength) + "..."
       : description;
@@ -132,7 +132,7 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
       {...attributes}
       className="mb-6"
     >
-      <div className={stickyNoteCard(stickyColor, "group relative cursor-pointer flex flex-col h-48")}>
+      <div className={stickyNoteCard(stickyColor, "group relative cursor-pointer flex flex-col")}>
         {/* Sticky note header with title, like/share buttons, and menu */}
         <div className="flex justify-between items-start mb-3 flex-shrink-0">
           <Link
@@ -183,7 +183,7 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
                   <Icons.MoreVertical className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white">
+              <DropdownMenuContent align="end" className="bg-white z-50">
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.preventDefault();
@@ -206,7 +206,7 @@ const PromptItem = ({ prompt }: { prompt: PromptWithTags }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    onOpen("deletePrompt", { prompt });
+                    onOpen("deletePrompt", { prompt, onConfirm });
                   }}
                   className="text-red-600"
                 >
@@ -300,6 +300,9 @@ export const PromptList = ({
   selectedTagIds = []
 }: PromptListProps) => {
   const [prompts, setPrompts] = useState<PromptWithTags[]>(initialPrompts || []);
+  const removePromptFromState = (promptId: string) => {
+    setPrompts((prevPrompts) => prevPrompts.filter((p) => p.id !== promptId));
+  };
   const [wasCreatePromptOpen, setWasCreatePromptOpen] = useState(false);
   const { isOpen, type } = useModal();
   const sensors = useSensors(
@@ -411,9 +414,9 @@ export const PromptList = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={filteredPrompts} strategy={rectSortingStrategy}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 p-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-12 p-4">
           {filteredPrompts.map((prompt) => (
-            <PromptItem key={prompt.id} prompt={prompt} />
+            <PromptItem key={prompt.id} prompt={prompt} onConfirm={() => removePromptFromState(prompt.id)} />
           ))}
         </div>
       </SortableContext>
