@@ -132,16 +132,16 @@ const PromptItem = ({ prompt, onConfirm }: { prompt: PromptWithTags, onConfirm: 
       {...attributes}
       className="mb-6"
     >
-      <div className={stickyNoteCard(stickyColor, "group relative cursor-pointer flex flex-col")}>
-        {/* Sticky note header with title, like/share buttons, and menu */}
-        <div className="flex justify-between items-start mb-3 flex-shrink-0">
-          <Link
-            href={`/prompts/${prompt.id}`}
-            className="flex-grow text-lg font-medium text-gray-800 hover:text-dell-blue-600 transition-colors line-clamp-2 mr-2"
-            {...listeners}
-          >
-            {prompt.title}
-          </Link>
+      <Link href={`/prompts/${prompt.id}`} className="block">
+        <div className={stickyNoteCard(stickyColor, "group relative cursor-pointer flex flex-col")}>
+          {/* Sticky note header with title, like/share buttons, and menu */}
+          <div className="flex justify-between items-start mb-3 flex-shrink-0">
+            <div
+              className="flex-grow text-lg font-medium text-gray-800 hover:text-dell-blue-600 transition-colors line-clamp-2 mr-2"
+              {...listeners}
+            >
+              {prompt.title}
+            </div>
           
           {/* Right side buttons: Like, Share, Menu */}
           <div className="flex items-center gap-1 flex-shrink-0">
@@ -282,6 +282,7 @@ const PromptItem = ({ prompt, onConfirm }: { prompt: PromptWithTags, onConfirm: 
           )}
         </div>
       </div>
+      </Link>
     </div>
   );
 };

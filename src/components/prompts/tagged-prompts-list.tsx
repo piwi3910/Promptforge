@@ -112,15 +112,13 @@ const TaggedPromptItem = ({ prompt }: { prompt: TaggedPrompt }) => {
 
   return (
     <div className="mb-6">
-      <div className={stickyNoteCard(stickyColor, "group relative cursor-pointer flex flex-col p-6")}>
-        {/* Sticky note header with title, like/share buttons, and menu */}
-        <div className="flex justify-between items-start mb-4 flex-shrink-0">
-          <Link
-            href={`/prompts/${prompt.id}`}
-            className="flex-grow text-xl font-semibold text-gray-800 hover:text-dell-blue-600 transition-colors line-clamp-4 mr-2"
-          >
-            {prompt.title}
-          </Link>
+      <Link href={`/prompts/${prompt.id}`} className="block">
+        <div className={stickyNoteCard(stickyColor, "group relative cursor-pointer flex flex-col p-6")}>
+          {/* Sticky note header with title, like/share buttons, and menu */}
+          <div className="flex justify-between items-start mb-4 flex-shrink-0">
+            <div className="flex-grow text-xl font-semibold text-gray-800 hover:text-dell-blue-600 transition-colors line-clamp-4 mr-2">
+              {prompt.title}
+            </div>
           
           {/* Right side buttons: Like, Share, Menu */}
           <div className="flex items-center gap-1 flex-shrink-0">
@@ -285,6 +283,7 @@ const TaggedPromptItem = ({ prompt }: { prompt: TaggedPrompt }) => {
           )}
         </div>
       </div>
+      </Link>
     </div>
   );
 };
