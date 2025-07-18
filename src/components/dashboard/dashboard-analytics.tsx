@@ -100,7 +100,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
             <CardTitle>Prompt Creation Trends</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={data.promptGrowth}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
@@ -143,7 +143,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
             <CardTitle>Prompts by Folder</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
                   data={data.promptsByFolder}
@@ -173,7 +173,7 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
             <CardTitle>Monthly Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" height={250}>
               <BarChart data={data.promptsByMonth}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
