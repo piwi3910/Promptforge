@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+// Force dynamic rendering to fix Turbopack font loading issues
+export const dynamic = 'force-dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
