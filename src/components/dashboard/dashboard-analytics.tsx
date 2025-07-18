@@ -93,26 +93,27 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
         </Card>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Prompt Creation Trends</CardTitle>
+      {/* All Charts in Single Horizontal Row */}
+      <div className="grid gap-3 grid-cols-1 lg:grid-cols-4">
+        {/* Trends */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Trends</CardTitle>
           </CardHeader>
-          <CardContent className="pl-2">
-            <ResponsiveContainer width="100%" height={250}>
+          <CardContent className="pt-2">
+            <ResponsiveContainer width="100%" height={200}>
               <LineChart data={data.promptGrowth}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   stroke="#888888"
-                  fontSize={12}
+                  fontSize={10}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
                   stroke="#888888"
-                  fontSize={12}
+                  fontSize={10}
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(value) => `${value}`}
@@ -138,20 +139,21 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
           </CardContent>
         </Card>
 
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Prompts by Folder</CardTitle>
+        {/* Folders */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Folders</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+          <CardContent className="pt-2">
+            <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
                   data={data.promptsByFolder}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-                  outerRadius={80}
+                  label={false}
+                  outerRadius={70}
                   fill="#8884d8"
                   dataKey="count"
                 >
@@ -159,33 +161,31 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip formatter={(value, name) => [`${value}`, name]} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Bottom Row */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Monthly Activity</CardTitle>
+        {/* Activity */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Activity</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+          <CardContent className="pt-2">
+            <ResponsiveContainer width="100%" height={200}>
               <BarChart data={data.promptsByMonth}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="month"
                   stroke="#888888"
-                  fontSize={12}
+                  fontSize={10}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
                   stroke="#888888"
-                  fontSize={12}
+                  fontSize={10}
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(value) => `${value}`}
@@ -197,25 +197,26 @@ export function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
           </CardContent>
         </Card>
 
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Top Tags</CardTitle>
+        {/* Tags */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Tags</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+          <CardContent className="pt-2">
+            <div className="space-y-2 max-h-[180px] overflow-y-auto">
               {data.topTags.map((tag) => (
                 <div key={tag.name} className="flex items-center">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
-                  <div className="flex-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium leading-none">{tag.name}</p>
-                      <p className="text-sm text-muted-foreground">{tag.count}</p>
+                      <p className="text-xs font-medium leading-none truncate pr-1">{tag.name}</p>
+                      <p className="text-xs text-muted-foreground whitespace-nowrap">{tag.count}</p>
                     </div>
-                    <div className="mt-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
+                    <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div
                         className="h-full bg-blue-500 transition-all duration-300"
-                        style={{ 
-                          width: `${(tag.count / Math.max(...data.topTags.map(t => t.count))) * 100}%` 
+                        style={{
+                          width: `${(tag.count / Math.max(...data.topTags.map(t => t.count))) * 100}%`
                         }}
                       />
                     </div>
