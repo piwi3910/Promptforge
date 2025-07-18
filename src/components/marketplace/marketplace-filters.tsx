@@ -52,7 +52,7 @@ export function MarketplaceFilters({
   const hasActiveFilters = searchQuery.length > 0 || selectedTags.length > 0 || sortBy !== 'recent';
 
   return (
-    <div className={`space-y-4 ${className || ''}`}>
+    <div className={`space-y-4 flex flex-col h-full ${className || ''}`}>
       {/* Search Input */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -146,12 +146,12 @@ export function MarketplaceFilters({
 
         {/* Available Tags */}
         {availableTags.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-2 flex-1">
             <span className="text-xs text-muted-foreground">Popular tags:</span>
-            <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+            <div className="flex flex-wrap gap-2 max-h-96 overflow-y-auto">
               {availableTags
                 .filter(tag => !selectedTags.includes(tag.name))
-                .slice(0, 20)
+                .slice(0, 50)
                 .map((tag) => (
                   <Badge
                     key={tag.id}
