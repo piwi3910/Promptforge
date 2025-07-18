@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ModalProvider } from "@/components/providers/modal-provider";
@@ -10,11 +10,11 @@ const inter = Inter({
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
+// Use system monospace font to avoid Turbopack font loading issues
+const systemMono = {
   variable: "--font-jetbrains-mono",
-  display: "swap",
-});
+  className: "font-mono",
+};
 
 export const metadata: Metadata = {
   title: "Prompt Manager",
@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("antialiased", inter.className, jetbrainsMono.variable)}>
+      <body className={cn("antialiased", inter.className, systemMono.variable)}>
         <AuthProvider>
           <ModalProvider />
           {children}

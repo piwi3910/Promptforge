@@ -70,28 +70,129 @@ export interface CachePerformanceMetrics {
 
 export class MonitoringService {
   async getPostgreSQLMetrics(): Promise<PostgreSQLMetrics> {
+    // Initialize with safe defaults
+    let connectionCount = 0;
+    let activeQueries = 0;
+    let slowQueries: Array<{
+      query: string;
+      duration: number;
+      calls: number;
+      meanTime: number;
+    }> = [];
+    let databaseSize = 0;
+    let tableStats: Array<{
+      tableName: string;
+      rowCount: number;
+      size: string;
+      indexSize: string;
+    }> = [];
+    let lockStats: Array<{
+      lockType: string;
+      count: number;
+    }> = [];
+    let cacheHitRatio = 0;
+
     try {
-      // Get connection count
-      const connectionResult = await db.$queryRaw<Array<{ count: bigint }>>`
-        SELECT count(*) as count FROM pg_stat_activity WHERE state = 'active';
-      `;
-      const connectionCount = Number(connectionResult[0]?.count || 0);
+      // Basic database connectivity test
+      await db.$queryRaw`SELECT 1`;
+      
+      // Get basic metrics with error handling for each query
+      try {
+        const connectionResult = await db.$queryRaw<Array<{ count: bigint }>>`
+          SELECT count(*) as count FROM pg_stat_activity WHERE state = 'active';
+        `;
+        connectionCount = Number(connectionResult[0]?.count || 0);
+      } catch (error) {
+        console.warn('Could not get connection count:', error);
+      }
 
-      // Get active queries count
-      const activeQueriesResult = await db.$queryRaw<Array<{ count: bigint }>>`
-        SELECT count(*) as count FROM pg_stat_activity 
-        WHERE state = 'active' AND query NOT LIKE '%pg_stat_activity%';
-      `;
-      const activeQueries = Number(activeQueriesResult[0]?.count || 0);
+      try {
+        const activeQueriesResult = await db.$queryRaw<Array<{ count: bigint }>>`
+          SELECT count(*) as count FROM pg_stat_activity
+          WHERE state = 'active' AND query NOT LIKE '%pg_stat_activity%';
+        `;
+        activeQueries = Number(activeQueriesResult[0]?.count || 0);
+      } catch (error) {
+        console.warn('Could not get active queries count:', error);
+      }
 
-      // Get slow queries (requires pg_stat_statements extension)
-      let slowQueries: Array<{
-        query: string;
-        duration: number;
-        calls: number;
-        meanTime: number;
-      }> = [];
+      try {
+        const dbSizeResult = await db.$queryRaw<Array<{ size: bigint }>>`
+          SELECT pg_database_size(current_database()) as size;
+        `;
+        databaseSize = Number(dbSizeResult[0]?.size || 0);
+      } catch (error) {
+        console.warn('Could not get database size:', error);
+      }
 
+      // Try to get table statistics (might fail if pg_stat_user_tables is not accessible)
+      try {
+        const tableStatsResult = await db.$queryRaw<Array<{
+          table_name: string;
+          row_count: bigint;
+          table_size: string;
+          index_size: string;
+        }>>`
+          SELECT
+            schemaname||'.'||relname as table_name,
+            COALESCE(n_tup_ins + n_tup_upd + n_tup_del, 0) as row_count,
+            pg_size_pretty(pg_total_relation_size(schemaname||'.'||relname)) as table_size,
+            pg_size_pretty(pg_indexes_size(schemaname||'.'||relname)) as index_size
+          FROM pg_stat_user_tables
+          ORDER BY pg_total_relation_size(schemaname||'.'||relname) DESC
+          LIMIT 5;
+        `;
+
+        tableStats = tableStatsResult.map(row => ({
+          tableName: row.table_name,
+          rowCount: Number(row.row_count),
+          size: row.table_size,
+          indexSize: row.index_size,
+        }));
+      } catch (error) {
+        console.warn('Could not get table statistics:', error);
+      }
+
+      // Try to get lock statistics (might fail in some environments)
+      try {
+        const lockStatsResult = await db.$queryRaw<Array<{
+          lock_type: string;
+          count: bigint;
+        }>>`
+          SELECT mode as lock_type, count(*) as count
+          FROM pg_locks
+          GROUP BY mode
+          ORDER BY count DESC
+          LIMIT 5;
+        `;
+
+        lockStats = lockStatsResult.map(row => ({
+          lockType: row.lock_type,
+          count: Number(row.count),
+        }));
+      } catch (error) {
+        console.warn('Could not get lock statistics:', error);
+      }
+
+      // Try to get cache hit ratio (might fail if pg_statio_user_tables is not accessible)
+      try {
+        const cacheHitResult = await db.$queryRaw<Array<{
+          hit_ratio: number;
+        }>>`
+          SELECT
+            COALESCE(
+              round(
+                (sum(heap_blks_hit) / NULLIF(sum(heap_blks_hit) + sum(heap_blks_read), 0)) * 100, 2
+              ), 0
+            ) as hit_ratio
+          FROM pg_statio_user_tables;
+        `;
+        cacheHitRatio = Number(cacheHitResult[0]?.hit_ratio || 0);
+      } catch (error) {
+        console.warn('Could not get cache hit ratio:', error);
+      }
+
+      // Try to get slow queries (requires pg_stat_statements extension)
       try {
         const slowQueriesResult = await db.$queryRaw<Array<{
           query: string;
@@ -99,14 +200,14 @@ export class MonitoringService {
           calls: bigint;
           mean_exec_time: number;
         }>>`
-          SELECT 
+          SELECT
             query,
             total_exec_time as total_exec_time,
             calls,
             mean_exec_time
-          FROM pg_stat_statements 
-          ORDER BY mean_exec_time DESC 
-          LIMIT 10;
+          FROM pg_stat_statements
+          ORDER BY mean_exec_time DESC
+          LIMIT 5;
         `;
 
         slowQueries = slowQueriesResult.map(row => ({
@@ -119,64 +220,6 @@ export class MonitoringService {
         console.warn('pg_stat_statements extension not available:', error);
       }
 
-      // Get database size
-      const dbSizeResult = await db.$queryRaw<Array<{ size: bigint }>>`
-        SELECT pg_database_size(current_database()) as size;
-      `;
-      const databaseSize = Number(dbSizeResult[0]?.size || 0);
-
-      // Get table statistics
-      const tableStatsResult = await db.$queryRaw<Array<{
-        table_name: string;
-        row_count: bigint;
-        table_size: string;
-        index_size: string;
-      }>>`
-        SELECT 
-          schemaname||'.'||tablename as table_name,
-          n_tup_ins + n_tup_upd + n_tup_del as row_count,
-          pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as table_size,
-          pg_size_pretty(pg_indexes_size(schemaname||'.'||tablename)) as index_size
-        FROM pg_stat_user_tables 
-        ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC 
-        LIMIT 10;
-      `;
-
-      const tableStats = tableStatsResult.map(row => ({
-        tableName: row.table_name,
-        rowCount: Number(row.row_count),
-        size: row.table_size,
-        indexSize: row.index_size,
-      }));
-
-      // Get lock statistics
-      const lockStatsResult = await db.$queryRaw<Array<{
-        lock_type: string;
-        count: bigint;
-      }>>`
-        SELECT mode as lock_type, count(*) as count 
-        FROM pg_locks 
-        GROUP BY mode 
-        ORDER BY count DESC;
-      `;
-
-      const lockStats = lockStatsResult.map(row => ({
-        lockType: row.lock_type,
-        count: Number(row.count),
-      }));
-
-      // Get cache hit ratio
-      const cacheHitResult = await db.$queryRaw<Array<{
-        hit_ratio: number;
-      }>>`
-        SELECT 
-          round(
-            (sum(heap_blks_hit) / (sum(heap_blks_hit) + sum(heap_blks_read))) * 100, 2
-          ) as hit_ratio
-        FROM pg_statio_user_tables;
-      `;
-      const cacheHitRatio = cacheHitResult[0]?.hit_ratio || 0;
-
       return {
         connectionCount,
         activeQueries,
@@ -188,13 +231,51 @@ export class MonitoringService {
       };
     } catch (error) {
       console.error('Error getting PostgreSQL metrics:', error);
-      throw error;
+      // Return safe defaults instead of throwing
+      return {
+        connectionCount: 0,
+        activeQueries: 0,
+        slowQueries: [],
+        databaseSize: 0,
+        tableStats: [],
+        lockStats: [],
+        cacheHitRatio: 0,
+      };
     }
   }
 
   async getRedisMetrics(): Promise<RedisMetrics> {
     try {
       const redis = getRedisClient();
+      
+      // Check if Redis is connected
+      if (redis.status !== 'ready') {
+        console.warn('Redis client not ready, status:', redis.status);
+        return {
+          info: {
+            version: 'unknown',
+            uptime: 0,
+            connectedClients: 0,
+            usedMemory: 0,
+            usedMemoryHuman: '0B',
+            totalCommandsProcessed: 0,
+            instantaneousOpsPerSec: 0,
+            keyspaceHits: 0,
+            keyspaceMisses: 0,
+            evictedKeys: 0,
+          },
+          keyStats: {
+            totalKeys: 0,
+            keysByType: {},
+            keysByPattern: [],
+          },
+          performance: {
+            hitRate: 0,
+            avgTtl: 0,
+            memoryEfficiency: 0,
+          },
+        };
+      }
       
       // Get Redis INFO
       const info = await redis.info();
