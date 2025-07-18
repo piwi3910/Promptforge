@@ -294,7 +294,14 @@ export default function SharedPromptsPage() {
   return (
     <ResizablePanels
       leftPanel={renderFilterSidebar()}
-      rightPanel={renderMainContent()}
+      rightPanel={
+        <div className="pb-4 px-4">
+          {renderMainContent()}
+        </div>
+      }
+      defaultLeftWidth={210}
+      minLeftWidth={150}
+      maxLeftWidth={500}
     />
   );
 }
