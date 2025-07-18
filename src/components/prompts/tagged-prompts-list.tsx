@@ -130,7 +130,7 @@ const TaggedPromptItem = ({ prompt }: { prompt: TaggedPrompt }) => {
               disabled={isLiking}
               className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
                 localIsLiked
-                  ? 'bg-dell-blue-500 text-white shadow-md'
+                  ? 'bg-white/90 text-red-500 shadow-md'
                   : 'bg-white/80 text-gray-600 hover:bg-white hover:shadow-md'
               } ${isLiking ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'}`}
               title={`${localLikeCount} likes`}
